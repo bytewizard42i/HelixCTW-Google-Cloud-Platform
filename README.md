@@ -64,6 +64,7 @@ provider change.
 | [`infra/terraform/`](infra/terraform/) | GCP Terraform: Cloud Run, GCS, Secret Manager, IAM |
 | [`docs/GCP_TERRAFORM.md`](docs/GCP_TERRAFORM.md) | How the GCP edition is provisioned, service-by-service |
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Pointer to the canonical HelixCTW architecture |
+| [MULTI_CLOUD_DISTRIBUTION.md](https://github.com/bytewizard42i/HelixCTW/blob/main/docs/MULTI_CLOUD_DISTRIBUTION.md) | The RAID-array-of-clouds model: load balancing + erasure coding across AWS/GCP/Cloudflare (canonical, in the AWS repo) |
 
 ## Companion Repositories
 

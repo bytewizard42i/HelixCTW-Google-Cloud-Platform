@@ -62,6 +62,20 @@ terraform plan     # review — nothing changes without your approval
 terraform apply    # provision the GCP edition
 ```
 
+## Beyond one cloud — the RAID-array-of-clouds model
+
+GCP is one of three cloud editions. The production vision is not "pick one cloud"
+but **active-active across all three** — a global load balancer distributing the
+stateless edge, and encrypted object storage replicated (RAID-1) or erasure-coded
+(RAID-5/6) across AWS, GCP, and Cloudflare, so no single cloud is a point of
+failure, capture, or trust. Terraform's multi-provider model (`aws` + `google` +
+`cloudflare` in one config) is what makes this tractable, and HelixCTW's privacy
+discipline (client-side encryption, commitments-not-PII, ZK identity) is what
+makes it safe.
+
+Full analysis, caveats, and repo pointers:
+[`HelixCTW/docs/MULTI_CLOUD_DISTRIBUTION.md`](https://github.com/bytewizard42i/HelixCTW/blob/main/docs/MULTI_CLOUD_DISTRIBUTION.md).
+
 ## Cost Notes
 
 - **Cloud Run** — scales to zero; you pay per request + CPU/memory while serving.
