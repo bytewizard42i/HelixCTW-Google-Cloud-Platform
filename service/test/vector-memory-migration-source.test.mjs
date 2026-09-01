@@ -39,6 +39,10 @@ const urls = Object.freeze({
     "verify_vector_memory_capability.sql",
     MEMORY_ROOT,
   ),
+  capabilityRotation: new URL(
+    "rotate_vector_memory_capability.sql",
+    MEMORY_ROOT,
+  ),
 });
 
 function stripSqlComments(sql) {
@@ -318,6 +322,22 @@ test("capability activation and post-readback remain derived and release-bound",
   assert.match(verification, /release_commit <> \$1/);
   assert.match(verification, /public_mutations_enabled = false/);
   assert.match(verification, /digest\(/);
+});
+
+test("capability rotation is isolated to one guarded marker replacement", async () => {
+  const rotation = stripSqlComments(await read(urls.capabilityRotation));
+  const parsedStatements = statements(rotation);
+  assert.equal(parsedStatements.length, 2);
+  assert.match(parsedStatements[0], /^DELETE FROM mhelix_gcp_testwired\.mhelix_runtime_capabilities/);
+  assert.match(parsedStatements[1], /^INSERT INTO mhelix_gcp_testwired\.mhelix_runtime_capabilities/);
+  assert.match(rotation, /release_commit = \$1/);
+  assert.match(rotation, /\$2 <> \$1/);
+  assert.match(rotation, /release_commit=' \|\| \$2/);
+  assert.doesNotMatch(
+    rotation,
+    /(?:DELETE FROM|INSERT INTO)\s+mhelix_gcp_testwired\.mhelix_(?:runs|memory|action_receipts|recall)/,
+  );
+  assert.doesNotMatch(rotation, /\b(?:DROP|TRUNCATE|ALTER|UPDATE)\b/);
 });
 
 test("negative variants prove the source guards reject regressions", async () => {

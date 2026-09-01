@@ -356,6 +356,10 @@ function buildResponseHeaders(requestId, allowedOrigin, additionalHeaders = {}) 
 
   if (allowedOrigin !== "") {
     responseHeaders["access-control-allow-origin"] = allowedOrigin;
+    // The browser evidence validator requires the raw transport request ID,
+    // not merely the JSON copy. CORS hides non-safelisted response headers
+    // unless the API explicitly exposes them.
+    responseHeaders["access-control-expose-headers"] = "x-request-id";
     responseHeaders.vary = "Origin";
   }
 

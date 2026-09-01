@@ -43,6 +43,7 @@ test("health answers the envelope with the GCP service identity", async () => {
   assert.equal(response.statusCode, 200);
   assert.equal(response.headers["x-request-id"], "test-request-1");
   assert.equal(response.headers["access-control-allow-origin"], ALLOWED_ORIGIN);
+  assert.equal(response.headers["access-control-expose-headers"], "x-request-id");
   const payload = JSON.parse(response.body);
   assert.equal(payload.ok, true);
   assert.equal(payload.schemaVersion, "mhelixctw/api/v1");
