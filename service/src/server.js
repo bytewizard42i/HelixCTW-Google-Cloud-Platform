@@ -1,0 +1,278 @@
+// SPDX-License-Identifier: Apache-2.0
+// HelixCTW GCP edition — Cloud Run service entry point.
+//
+// Routes (same contract as the Cloudflare Worker, plus the TestWired status
+// probe pattern from the AWS edition):
+//   GET  /healthz                    liveness only, no downstream probes
+//   GET  /                           service identity (Worker GET parity)
+//   GET  /api/v1/status              TestWired status + provider probes
+//   POST /                           compliance check (Worker POST parity)
+//   POST /api/v1/compliance/check    same handler, canonical path
+//
+// Honesty rules (see MidnightHelixCTW AGENTS.md): a probe result is evidence
+// for exactly what it probed, nothing more. Failures are replaced with one
+// bounded safe error and the provider reports NOT_CONNECTED.
+
+import { createServer } from "node:http";
+
+import {
+  validateComplianceInput,
+  runComplianceCheck,
+} from "./compliance.js";
+import { createReceiptStore } from "./gcs-receipts.js";
+import { createCockroachDbProvider } from "./cockroachdb-provider.js";
+import { createCockroachQueryExecutor } from "./cockroach-query-executor.js";
+import { HELIXCTW_GCP_ENVIRONMENT_MARKER_COMMITMENT_HEX } from "./environment-marker.js";
+
+const SERVICE_NAME = "helixctw-gcp-compliance";
+const BUILD_STAGE = "TESTWIRED";
+const MAX_REQUEST_BYTES = 32_768;
+
+// ---------------------------------------------------------------------------
+// Configuration — every value arrives via environment variables set by
+// Terraform on the Cloud Run service. The database URL is a Secret Manager
+// reference; it never appears in code, image, or logs.
+// ---------------------------------------------------------------------------
+const configuration = Object.freeze({
+  port: Number.parseInt(process.env.PORT ?? "8080", 10),
+  environment: process.env.HELIXCTW_ENVIRONMENT ?? "testwired-dev",
+  midnightNetwork: process.env.MIDNIGHT_NETWORK_ID ?? "testnet-02",
+  receiptsBucket: process.env.HELIXCTW_RECEIPTS_BUCKET ?? "",
+  allowedOrigins: (process.env.HELIXCTW_ALLOWED_ORIGINS ?? "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter((origin) => origin.length > 0),
+  databaseUrl: process.env.HELIXCTW_GCP_DB_URL ?? "",
+});
+
+const receiptStore = createReceiptStore({
+  bucketName: configuration.receiptsBucket,
+});
+
+// ---------------------------------------------------------------------------
+// CockroachDB probe wiring — fail closed. If the URL is absent or malformed,
+// the provider stays undefined and status reports NOT_CONNECTED rather than
+// crashing the service or inventing evidence.
+// ---------------------------------------------------------------------------
+function buildCockroachProvider(databaseUrl) {
+  if (!databaseUrl) return undefined;
+
+  try {
+    const parsed = new URL(databaseUrl);
+    const executor = createCockroachQueryExecutor({
+      host: parsed.hostname,
+      port: Number.parseInt(parsed.port || "26257", 10),
+      database: parsed.pathname.replace(/^\//, ""),
+      user: decodeURIComponent(parsed.username),
+      password: decodeURIComponent(parsed.password),
+      statementTimeoutMilliseconds: 1_000,
+      queryTimeoutMilliseconds: 1_500,
+      connectionTimeoutMilliseconds: 1_500,
+      probeTimeoutMilliseconds: 3_500,
+    });
+
+    return createCockroachDbProvider({
+      queryExecutor: executor,
+      expectedDatabaseName: parsed.pathname.replace(/^\//, ""),
+      expectedRuntimeUser: decodeURIComponent(parsed.username),
+      expectedMarkerCommitmentHex: HELIXCTW_GCP_ENVIRONMENT_MARKER_COMMITMENT_HEX,
+      statementTimeoutMilliseconds: 1_000,
+      probeTimeoutMilliseconds: 4_000,
+    });
+  } catch {
+    return undefined;
+  }
+}
+
+const cockroachProvider = buildCockroachProvider(configuration.databaseUrl);
+
+// ---------------------------------------------------------------------------
+// HTTP plumbing
+// ---------------------------------------------------------------------------
+function corsHeaders(request) {
+  const origin = request.headers.origin;
+  if (origin && configuration.allowedOrigins.includes(origin)) {
+    return {
+      "access-control-allow-origin": origin,
+      "access-control-allow-methods": "GET, POST, OPTIONS",
+      "access-control-allow-headers": "content-type",
+      "access-control-max-age": "600",
+      vary: "Origin",
+    };
+  }
+  return {};
+}
+
+function sendJson(request, response, body, status = 200) {
+  const payload = JSON.stringify(body, null, 2);
+  response.writeHead(status, {
+    "content-type": "application/json; charset=utf-8",
+    ...corsHeaders(request),
+  });
+  response.end(payload);
+}
+
+function sendError(request, response, message, status = 400) {
+  sendJson(request, response, { ok: false, error: message }, status);
+}
+
+async function readJsonBody(request) {
+  const contentType = request.headers["content-type"] ?? "";
+  if (!contentType.toLowerCase().includes("application/json")) {
+    return { error: { message: "Content-Type must be application/json.", status: 415 } };
+  }
+
+  const chunks = [];
+  let total = 0;
+  for await (const chunk of request) {
+    total += chunk.length;
+    if (total > MAX_REQUEST_BYTES) {
+      return { error: { message: "Request body is too large.", status: 413 } };
+    }
+    chunks.push(chunk);
+  }
+
+  try {
+    return { input: JSON.parse(Buffer.concat(chunks).toString("utf8")) };
+  } catch {
+    return { error: { message: "Request body must be valid JSON.", status: 400 } };
+  }
+}
+
+function serviceIdentity() {
+  return {
+    ok: true,
+    service: SERVICE_NAME,
+    edition: "gcp",
+    environment: configuration.environment,
+    midnightNetwork: configuration.midnightNetwork,
+  };
+}
+
+async function statusResponse() {
+  // GCS: configuration evidence only — an enabled store proves a bucket is
+  // configured, not that a write succeeded. Writes are proven per-receipt.
+  const providers = {
+    gcs: {
+      providerId: "gcs",
+      state: receiptStore.enabled ? "CONFIGURED" : "NOT_CONNECTED",
+    },
+    cockroachdb: { providerId: "cockroachdb", state: "NOT_CONNECTED" },
+  };
+
+  if (cockroachProvider !== undefined) {
+    try {
+      const proof = await cockroachProvider.probe();
+      providers.cockroachdb = {
+        providerId: "cockroachdb",
+        state: "CONNECTED",
+        schemaVersion: proof.schemaVersion,
+        receiptId: proof.receiptId,
+        observedAt: proof.observedAt,
+      };
+    } catch {
+      // fail closed: stays NOT_CONNECTED, no details leak
+    }
+  }
+
+  return {
+    ok: true,
+    service: SERVICE_NAME,
+    edition: "gcp",
+    buildStage: BUILD_STAGE,
+    environment: configuration.environment,
+    midnightNetwork: configuration.midnightNetwork,
+    transport: {
+      providerId: "gcp",
+      scope: "GCP_CLOUD_RUN_ONLY",
+    },
+    providers,
+  };
+}
+
+async function complianceResponse(request, response) {
+  const parsed = await readJsonBody(request);
+  if (parsed.error) {
+    return sendError(request, response, parsed.error.message, parsed.error.status);
+  }
+
+  const validationError = validateComplianceInput(parsed.input);
+  if (validationError) {
+    return sendError(request, response, validationError);
+  }
+
+  const receipt = runComplianceCheck(parsed.input, {
+    environment: configuration.environment,
+    midnightNetwork: configuration.midnightNetwork,
+  });
+
+  let auditStored = false;
+  try {
+    auditStored = await receiptStore.put(receipt);
+  } catch {
+    // Fail closed but keep the answer honest: the check ran, persistence did
+    // not. auditStored=false says exactly that.
+    auditStored = false;
+  }
+
+  return sendJson(request, response, {
+    ok: true,
+    compliance: receipt,
+    auditStored,
+    persistenceNote: auditStored
+      ? "GCS audit receipt stored."
+      : "Audit receipt was NOT persisted (bucket unconfigured or write failed).",
+  });
+}
+
+const server = createServer(async (request, response) => {
+  try {
+    const path = new URL(request.url, "http://localhost").pathname;
+
+    if (request.method === "OPTIONS") {
+      response.writeHead(204, corsHeaders(request));
+      return response.end();
+    }
+
+    if (request.method === "GET" && path === "/healthz") {
+      return sendJson(request, response, { ok: true, service: SERVICE_NAME });
+    }
+
+    if (request.method === "GET" && path === "/") {
+      return sendJson(request, response, serviceIdentity());
+    }
+
+    if (request.method === "GET" && path === "/api/v1/status") {
+      return sendJson(request, response, await statusResponse());
+    }
+
+    if (
+      request.method === "POST" &&
+      (path === "/" || path === "/api/v1/compliance/check")
+    ) {
+      return complianceResponse(request, response);
+    }
+
+    if (path === "/" || path === "/api/v1/compliance/check") {
+      return sendError(request, response, "Use POST for compliance checks.", 405);
+    }
+
+    return sendError(request, response, "Not found.", 404);
+  } catch {
+    return sendError(request, response, "The request could not be completed.", 500);
+  }
+});
+
+server.listen(configuration.port, () => {
+  // Cloud Run captures stdout as structured-ish logs. No secrets here.
+  console.log(
+    JSON.stringify({
+      message: "listening",
+      service: SERVICE_NAME,
+      port: configuration.port,
+      environment: configuration.environment,
+      receiptsBucketConfigured: receiptStore.enabled,
+      cockroachProbeConfigured: cockroachProvider !== undefined,
+    }),
+  );
+});
