@@ -38,8 +38,8 @@ const releaseCommit = process.env.HELIXCTW_GCP_RELEASE_COMMIT ?? "";
 const adminDatabaseUrl = process.env.HELIXCTW_GCP_ADMIN_DB_URL ?? "";
 const mode = process.argv[2];
 
-if (!new Set(["--check", "--apply"]).has(mode)) {
-  throw new Error("Choose exactly one mode: --check or --apply.");
+if (!new Set(["--check", "--apply", "--recover"]).has(mode)) {
+  throw new Error("Choose exactly one mode: --check, --apply, or --recover.");
 }
 if (!/^[0-9a-f]{40}$/.test(releaseCommit)) {
   throw new Error("HELIXCTW_GCP_RELEASE_COMMIT must be a 40-character lowercase commit.");
@@ -92,8 +92,14 @@ async function executeSource(client, fileName, parameter) {
   return statements.length;
 }
 
-async function verifyBooleanSource(client, fileName, parameter) {
+async function verifyBooleanSource(
+  client,
+  fileName,
+  parameter,
+  expectedFalseFields = [],
+) {
   const statements = sqlStatements(await fileText(fileName));
+  const expectedFalse = new Set(expectedFalseFields);
   const checks = {};
   for (const statement of statements) {
     const values = statement.includes("$1") ? [parameter] : [];
@@ -107,13 +113,22 @@ async function verifyBooleanSource(client, fileName, parameter) {
       }
     }
   }
+  const missingExpectedFields = expectedFalseFields.filter(
+    (name) => !Object.hasOwn(checks, name),
+  );
   const failedChecks = Object.entries(checks)
-    .filter(([, value]) => value !== true)
+    .filter(([name, value]) => value !== !expectedFalse.has(name))
     .map(([name]) => name);
-  if (Object.keys(checks).length === 0 || failedChecks.length > 0) {
-    throw new Error(`${fileName} failed: ${failedChecks.join(", ") || "no checks returned"}.`);
+  if (
+    Object.keys(checks).length === 0 ||
+    missingExpectedFields.length > 0 ||
+    failedChecks.length > 0
+  ) {
+    throw new Error(
+      `${fileName} failed: ${[...missingExpectedFields, ...failedChecks].join(", ") || "no checks returned"}.`,
+    );
   }
-  console.log(`${fileName}: ${Object.keys(checks).length} boolean checks passed.`);
+  console.log(`${fileName}: ${Object.keys(checks).length} boolean checks matched expected state.`);
 }
 
 function targetUrlFor(username, password) {
@@ -122,6 +137,43 @@ function targetUrlFor(username, password) {
   target.username = username;
   target.password = password;
   return target;
+}
+
+async function readPendingRuntimeUrl() {
+  const pending = await readFile(pendingOutputPath, "utf8");
+  const match = pending.match(
+    /^export TF_VAR_vector_database_url='([^'\n]+)'$/m,
+  );
+  if (!match) throw new Error("The pending runtime secret file has an invalid shape.");
+  const runtimeUrl = new URL(match[1]);
+  if (
+    runtimeUrl.hostname !== parsedAdminUrl.hostname ||
+    runtimeUrl.pathname !== `/${targetDatabase}` ||
+    decodeURIComponent(runtimeUrl.username) !== runtimeUser ||
+    decodeURIComponent(runtimeUrl.password).length < 16
+  ) {
+    throw new Error("The pending runtime URL does not match the reviewed identity.");
+  }
+  return runtimeUrl;
+}
+
+async function verifyRuntimeCredential(runtimeUrl) {
+  const runtimeClient = clientFor(runtimeUrl);
+  await runtimeClient.connect();
+  try {
+    const result = await runtimeClient.query(
+      `SELECT count(*) = 1 AS capability_visible
+         FROM mhelix_gcp_testwired.mhelix_runtime_capabilities
+        WHERE capability_id = 'vector_memory_recall'
+          AND release_commit = $1`,
+      [releaseCommit],
+    );
+    if (result.rows[0]?.capability_visible !== true) {
+      throw new Error("The runtime credential cannot read its release-bound capability.");
+    }
+  } finally {
+    await runtimeClient.end();
+  }
 }
 
 const adminClient = clientFor(parsedAdminUrl);
@@ -168,6 +220,64 @@ console.log(
 );
 
 if (mode === "--check") process.exit(0);
+
+// Narrow recovery for the known post-capability verification interruption:
+// all three target objects and the mode-0600 pending credential must exist.
+// Every verifier field must be true except the pre-activation assertion that
+// runtime_capabilities is empty; that exact field must now be false, while the
+// dedicated capability verifier proves exactly one correct release-bound row.
+if (mode === "--recover") {
+  if (!targetExists || !ownerExists || !runtimeExists) {
+    await adminClient.end();
+    throw new Error("Recovery requires the complete known partial object set.");
+  }
+  await adminClient.end();
+  try {
+    await access(outputPath);
+    throw new Error("The final runtime secret already exists; recovery is not applicable.");
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw error;
+  }
+  const pendingRuntimeUrl = await readPendingRuntimeUrl();
+  const targetAdminUrl = targetUrlFor(
+    decodeURIComponent(parsedAdminUrl.username),
+    decodeURIComponent(parsedAdminUrl.password),
+  );
+  const recoveryClient = clientFor(targetAdminUrl);
+  await recoveryClient.connect();
+  try {
+    await verifyBooleanSource(recoveryClient, "verify_marker_activation.sql");
+    await verifyBooleanSource(
+      recoveryClient,
+      "verify_vector_memory_activation.sql",
+      undefined,
+      ["runtime_capabilities_empty"],
+    );
+    await verifyBooleanSource(
+      recoveryClient,
+      "verify_vector_memory_capability.sql",
+      releaseCommit,
+    );
+    const caseResult = await recoveryClient.query(
+      `SELECT count(*) = 1 AS case_is_exact
+         FROM mhelix_gcp_testwired.mhelix_case_namespaces
+        WHERE scenario_id = 'morrow-farmhouse-testwired-v1'
+          AND synthetic = true
+          AND release_commit = $1`,
+      [releaseCommit],
+    );
+    if (caseResult.rows[0]?.case_is_exact !== true) {
+      throw new Error("The canonical Stage B case row is not exact.");
+    }
+  } finally {
+    await recoveryClient.end();
+  }
+  await verifyRuntimeCredential(pendingRuntimeUrl);
+  await rename(pendingOutputPath, outputPath);
+  console.log(`Recovery verified. Runtime URL promoted to ${outputPath} (contents not printed).`);
+  process.exit(0);
+}
+
 if (targetExists || ownerExists || runtimeExists) {
   await adminClient.end();
   throw new Error("Stage B target objects already exist. Refusing a non-pristine bootstrap.");
@@ -233,10 +343,14 @@ try {
   // New CockroachDB databases grant TEMPORARY to public by default. Remove it
   // so the exact privilege verifier can prove public has only CONNECT.
   await targetClient.query(`REVOKE TEMPORARY ON DATABASE ${targetDatabase} FROM public`);
-  await executeSource(targetClient, "activate_vector_memory_capability.sql", releaseCommit);
   await targetClient.query(`RESET ROLE`);
 
+  // This verifier deliberately proves the capability table is still empty.
+  // Only after all schema/grant checks pass may the release-bound row exist.
   await verifyBooleanSource(targetClient, "verify_vector_memory_activation.sql");
+  await targetClient.query(`SET ROLE ${ownerRole}`);
+  await executeSource(targetClient, "activate_vector_memory_capability.sql", releaseCommit);
+  await targetClient.query(`RESET ROLE`);
   await verifyBooleanSource(targetClient, "verify_vector_memory_capability.sql", releaseCommit);
 } finally {
   await targetClient.end();
@@ -244,22 +358,7 @@ try {
 
 // Prove the generated least-privilege credential can authenticate and read its
 // release-bound capability before promoting the pending file.
-const runtimeClient = clientFor(runtimeUrl);
-await runtimeClient.connect();
-try {
-  const result = await runtimeClient.query(
-    `SELECT count(*) = 1 AS capability_visible
-       FROM mhelix_gcp_testwired.mhelix_runtime_capabilities
-      WHERE capability_id = 'vector_memory_recall'
-        AND release_commit = $1`,
-    [releaseCommit],
-  );
-  if (result.rows[0]?.capability_visible !== true) {
-    throw new Error("The runtime credential cannot read its release-bound capability.");
-  }
-} finally {
-  await runtimeClient.end();
-}
+await verifyRuntimeCredential(runtimeUrl);
 
 await rename(pendingOutputPath, outputPath);
 console.log(`Stage B bootstrap verified. Runtime URL promoted to ${outputPath} (contents not printed).`);
