@@ -63,16 +63,16 @@ ffmpeg -y -v error \
   -f s16le -ar 24000 -ac 1 -i n07.pcm -f s16le -ar 24000 -ac 1 -i n08.pcm \
   -f s16le -ar 24000 -ac 1 -i n09.pcm -f s16le -ar 24000 -ac 1 -i n10.pcm \
   -filter_complex "\
-    [0]aresample=48000,adelay=400|400[a0];\
-    [1]aresample=48000,adelay=14800|14800[a1];\
-    [2]aresample=48000,adelay=40800|40800[a2];\
-    [3]aresample=48000,adelay=65800|65800[a3];\
-    [4]aresample=48000,adelay=80000|80000[a4];\
-    [5]aresample=48000,adelay=92400|92400[a5];\
-    [6]aresample=48000,adelay=106800|106800[a6];\
-    [7]aresample=48000,adelay=124600|124600[a7];\
-    [8]aresample=48000,adelay=140700|140700[a8];\
-    [9]aresample=48000,adelay=156900|156900[a9];\
+    [0]atempo=1.15,aresample=48000,adelay=400|400[a0];\
+    [1]atempo=1.15,aresample=48000,adelay=14800|14800[a1];\
+    [2]atempo=1.15,aresample=48000,adelay=40800|40800[a2];\
+    [3]atempo=1.15,aresample=48000,adelay=65800|65800[a3];\
+    [4]atempo=1.15,aresample=48000,adelay=80000|80000[a4];\
+    [5]atempo=1.15,aresample=48000,adelay=92400|92400[a5];\
+    [6]atempo=1.15,aresample=48000,adelay=106800|106800[a6];\
+    [7]atempo=1.15,aresample=48000,adelay=124600|124600[a7];\
+    [8]atempo=1.15,aresample=48000,adelay=140700|140700[a8];\
+    [9]atempo=1.15,aresample=48000,adelay=156900|156900[a9];\
     [a0][a1][a2][a3][a4][a5][a6][a7][a8][a9]amix=inputs=10:normalize=0,\
     loudnorm=I=-16:TP=-1.5:LRA=11,apad[voice]" \
   -map "[voice]" -t 178.5 -c:a aac -b:a 192k voice-track.m4a
@@ -83,14 +83,14 @@ ffmpeg -y -v error -i video-track.mp4 -i voice-track.m4a \
   "$OUTDIR/HelixCTW_GoogleCloud_TestWired_2026_VoiceOnly.mp4"
 
 # STEP 5 — Master B: add the Suno theme as a ducked quiet bed
-#   volume=0.18       = the song sits well under the narration by default
+#   volume=0.28       = the song sits well under the narration by default
 #   sidechaincompress = the VOICE is the key signal; when it plays, the music
 #                       is compressed a further ~12 dB (nice and quiet), and
 #                       louder song passages are pushed down hardest
 #   afade in/out      = gentle 2.5 s entrance, 3.5 s tail under the end card
 ffmpeg -y -v error -i video-track.mp4 -i voice-track.m4a -i "$SONG" \
   -filter_complex "\
-    [2:a]aresample=48000,volume=0.18,afade=t=in:st=0:d=2.5,afade=t=out:st=175:d=3.5[bed];\
+    [2:a]aresample=48000,volume=0.28,afade=t=in:st=0:d=2.5,afade=t=out:st=175:d=3.5[bed];\
     [1:a]asplit=2[voiceMix][voiceKey];\
     [bed][voiceKey]sidechaincompress=threshold=0.02:ratio=8:attack=40:release=900[ducked];\
     [voiceMix][ducked]amix=inputs=2:normalize=0,alimiter=limit=0.95[mix]" \
