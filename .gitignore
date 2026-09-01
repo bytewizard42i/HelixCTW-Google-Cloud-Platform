@@ -32,6 +32,8 @@ application_default_credentials.json
 
 # Node (if any tooling lands here)
 node_modules/
+web/dist/
+.env.local
 
 # Windows Mark-of-the-Web
 *:Zone.Identifier
