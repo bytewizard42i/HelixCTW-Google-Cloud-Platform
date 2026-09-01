@@ -18,12 +18,13 @@
 
 import { randomBytes } from "node:crypto";
 import { access, readFile, rename, writeFile } from "node:fs/promises";
+import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import pg from "pg";
-
 const repositoryRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
+const requireFromService = createRequire(join(repositoryRoot, "service/package.json"));
+const pg = requireFromService("pg");
 const databaseDirectory = join(repositoryRoot, "database", "memory");
 const targetDatabase = "mhelix_gcp_testwired";
 const ownerRole = "mhelix_gcp_migrator";
