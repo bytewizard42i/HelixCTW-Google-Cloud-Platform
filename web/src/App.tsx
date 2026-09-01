@@ -292,7 +292,13 @@ export default function App() {
 
   const clientConfiguration = useMemo(() => {
     try {
-      const baseUrl = normalizePublicApiBaseUrl(import.meta.env.VITE_API_BASE_URL);
+      // GCP deviation: this edition ships a public production default (the
+      // deployed Cloud Run /judge mount — a public address, never a secret).
+      // VITE_API_BASE_URL still overrides it for development and previews.
+      const baseUrl = normalizePublicApiBaseUrl(
+        import.meta.env.VITE_API_BASE_URL ??
+          "https://helixctw-compliance-f2dbl6kvwa-ue.a.run.app/judge",
+      );
       return {
         client: baseUrl ? createJudgeApiClient(baseUrl) : null,
         error: null,
