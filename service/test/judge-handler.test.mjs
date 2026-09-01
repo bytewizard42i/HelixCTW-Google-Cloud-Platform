@@ -152,6 +152,73 @@ test("a connected CockroachDB probe upgrades exactly its own row", async () => {
   assert.equal(cockroachRow.evidenceReference.receiptId, probeReceiptId);
 });
 
+test("receipt route returns the compact GCP evidence contract", async () => {
+  process.env.K_SERVICE = "helixctw-compliance";
+  process.env.K_REVISION = "helixctw-compliance-00009-test";
+  process.env.K_CONFIGURATION = "helixctw-compliance";
+  process.env.PORT = "8080";
+  const operationReceiptId = "103d8608-a487-4e42-ab03-875122321833";
+  const transportRequestId = "original-gcp-request-001";
+  const handler = createHandler({
+    cockroachProvider: {
+      probe: async () => ({
+        schemaVersion: "helixctw-gcp/cockroach-probe/v1",
+        connected: true,
+        receiptId: "690f67f3-1cc9-4cdd-9d1f-9896d9b048b9",
+        observedAt: "2026-09-01T14:00:00.000Z",
+      }),
+    },
+    vectorMemoryProvider: {
+      checkCapability: async () => ({ capabilityState: "SOURCE_ONLY" }),
+      fetchReceipt: async () => ({
+        receiptId: operationReceiptId,
+        runId: "31ba31f1-c6d6-4b65-83fc-ea54195a6dd7",
+        operation: "attempt_protected_disclosure",
+        receiptState: "DENIED",
+        protectedFieldsReturned: 0,
+        transportRequestId,
+        createdAt: "2026-09-01T14:01:00.000Z",
+        completedAt: "2026-09-01T14:01:01.000Z",
+        matches: [],
+      }),
+    },
+  });
+  const response = await handler(
+    buildEvent({ path: `/api/v1/judge/receipts/${operationReceiptId}` }),
+  );
+  assert.equal(response.statusCode, 200);
+  const payload = JSON.parse(response.body);
+  assert.deepEqual(Object.keys(payload).sort(), [
+    "ok",
+    "receipt",
+    "requestId",
+    "schemaVersion",
+  ]);
+  assert.deepEqual(Object.keys(payload.receipt).sort(), [
+    "action",
+    "buildStage",
+    "createdAt",
+    "deploymentEvidence",
+    "operation",
+    "protectedFieldsReturned",
+    "providers",
+    "receiptId",
+    "releaseCommit",
+    "runId",
+    "scenarioId",
+  ]);
+  assert.deepEqual(payload.receipt.providers[0], {
+    provider: "gcp",
+    evidence: "LIVE_TESTWIRED",
+    requestId: transportRequestId,
+    evidenceLabel: "REALDEAL_TEST",
+  });
+  assert.deepEqual(payload.receipt.providers[1], {
+    provider: "midnight",
+    evidence: "SOURCE_ONLY",
+  });
+});
+
 test("the provider baseline itself is fail-closed", () => {
   for (const provider of PROVIDER_STATES) {
     assert.equal(provider.evidence, "SOURCE_ONLY", provider.id);

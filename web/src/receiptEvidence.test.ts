@@ -97,6 +97,25 @@ function validate(
 }
 
 describe("validateReceiptResponseEvidence", () => {
+  it("accepts GCP request evidence without promoting synthetic Midnight", () => {
+    const expectation = initialPredicateExpectation({
+      expectedProviderReceiptIdsByProvider: {},
+    });
+    const response = validReceiptResponse({
+      providers: [
+        {
+          provider: "gcp",
+          evidence: "LIVE_TESTWIRED",
+          requestId: "gcp-request-001",
+          evidenceLabel: "REALDEAL_TEST",
+        },
+        { provider: "midnight", evidence: "SOURCE_ONLY" },
+        { provider: "didz", evidence: "MOCK", evidenceLabel: "MOCK" },
+      ],
+    });
+    expect(validate(response, expectation)).toMatchObject({ valid: true });
+  });
+
   it("accepts an exact receipt bound to the checkpoint, release, and provider", () => {
     const decision = validate(validReceiptResponse());
 

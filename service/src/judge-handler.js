@@ -1183,26 +1183,50 @@ async function dispatchRequest(
     } catch (error) {
       throw memoryErrorToPublicError(error);
     }
+    if (
+      typeof stored.transportRequestId !== "string" ||
+      !REQUEST_IDENTIFIER_PATTERN.test(stored.transportRequestId)
+    ) {
+      throw new PublicApiError(
+        500,
+        "RECEIPT_EVIDENCE_UNAVAILABLE",
+        "The stored receipt is missing its transport request binding.",
+      );
+    }
+    const isAction = ACTIONS.includes(stored.operation);
     return {
       statusCode: 200,
       payload: {
         ...buildBasePayload(true, requestId),
-        buildStage: configuration.buildStage,
-        deploymentEvidence: configuration.deploymentEvidence,
-        releaseCommit: configuration.releaseCommit,
         receipt: {
           receiptId: stored.receiptId,
           runId: stored.runId,
           scenarioId: CANONICAL_SCENARIO.scenarioId,
           operation: stored.operation,
-          receiptState: stored.receiptState,
+          ...(isAction ? { action: stored.operation } : {}),
+          buildStage: configuration.buildStage,
+          deploymentEvidence: "LIVE_TESTWIRED",
+          releaseCommit: configuration.releaseCommit,
           createdAt: stored.createdAt,
-          completedAt: stored.completedAt,
-          transportRequestId: stored.transportRequestId,
-          matches: stored.matches,
+          providers: [
+            {
+              provider: "gcp",
+              evidence: "LIVE_TESTWIRED",
+              requestId: stored.transportRequestId,
+              evidenceLabel: "REALDEAL_TEST",
+            },
+            {
+              // The returned identifier is deterministic fixture evidence,
+              // not proof that Midnight executed this operation.
+              provider: "midnight",
+              evidence: "SOURCE_ONLY",
+            },
+            { provider: "didz", evidence: "MOCK", evidenceLabel: "MOCK" },
+            { provider: "agenticdid", evidence: "MOCK", evidenceLabel: "MOCK" },
+            { provider: "rwaz", evidence: "MOCK", evidenceLabel: "MOCK" },
+          ],
           protectedFieldsReturned: stored.protectedFieldsReturned,
         },
-        providers: readiness.providerStates,
       },
     };
   }

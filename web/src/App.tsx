@@ -605,8 +605,16 @@ export default function App() {
           "Connection readiness or release changed while the receipt was in flight. The late receipt was rejected.",
         );
       }
+      // The deterministic Midnight identifier remains in checkpoint history
+      // for uniqueness and continuity checks, but it is not a live provider
+      // receipt in the GCP edition. Supplemental receipt validation therefore
+      // requires only the genuine GCP request binding recorded by CockroachDB.
+      const gcpReceiptExpectation = {
+        ...expectedReceipt,
+        expectedProviderReceiptIdsByProvider: {},
+      };
       const receiptDecision = validateReceiptResponseEvidence(response, {
-        checkpointReceipt: expectedReceipt,
+        checkpointReceipt: gcpReceiptExpectation,
         liveReleaseCommit: requestReleaseCommit,
       });
       if (!receiptDecision.valid) {
