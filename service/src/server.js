@@ -27,6 +27,7 @@ import {
 import { createHandler as createJudgeHandler } from "./judge-handler.js";
 import { createReceiptStore } from "./gcs-receipts.js";
 import { createCockroachDbProvider } from "./cockroachdb-provider.js";
+import { createGcpVectorMemoryProvider } from "./gcp-vector-bootstrap.js";
 import { createCockroachQueryExecutor } from "./cockroach-query-executor.js";
 import { HELIXCTW_GCP_ENVIRONMENT_MARKER_COMMITMENT_HEX } from "./environment-marker.js";
 
@@ -49,6 +50,8 @@ const configuration = Object.freeze({
     .map((origin) => origin.trim())
     .filter((origin) => origin.length > 0),
   databaseUrl: process.env.HELIXCTW_GCP_DB_URL ?? "",
+  vectorDatabaseUrl: process.env.HELIXCTW_GCP_VECTOR_DB_URL ?? "",
+  releaseCommit: process.env.HELIXCTW_RELEASE_COMMIT ?? "",
 });
 
 const receiptStore = createReceiptStore({
@@ -92,10 +95,24 @@ function buildCockroachProvider(databaseUrl) {
 
 const cockroachProvider = buildCockroachProvider(configuration.databaseUrl);
 
-// The ported judge API (see judge-handler.js). It receives the same read-only
-// CockroachDB probe and, deliberately, no vector-memory provider in Stage A:
-// every memory mutation answers an honest 503 until Stage B connects one.
-const judgeHandler = createJudgeHandler({ cockroachProvider });
+function buildVectorMemoryProvider(databaseUrl, releaseCommit) {
+  if (!databaseUrl || !releaseCommit) return undefined;
+  try {
+    return createGcpVectorMemoryProvider({ databaseUrl, releaseCommit });
+  } catch {
+    return undefined;
+  }
+}
+
+const vectorMemoryProvider = buildVectorMemoryProvider(
+  configuration.vectorDatabaseUrl,
+  configuration.releaseCommit,
+);
+
+// The ported judge API (see judge-handler.js). The read-only environment probe
+// and the dedicated vector-memory provider are independent: either can fail
+// closed without exposing a credential or crashing the service.
+const judgeHandler = createJudgeHandler({ cockroachProvider, vectorMemoryProvider });
 
 // ---------------------------------------------------------------------------
 // Judge adapter — converts a Node request into the Lambda payload-format 2.0

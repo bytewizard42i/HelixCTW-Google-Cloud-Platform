@@ -113,10 +113,10 @@ function readConfiguration() {
   // A browser origin must contain only scheme, host, and optional port. Paths,
   // credentials, query strings, fragments, wildcard origins, invalid members,
   // duplicates, and unexpectedly broad lists are refused as one fail-closed
-  // configuration unit. (GCP deviation: the limit is six because the shared
-  // deployment also lists two localhost development origins.)
+  // configuration unit. (GCP deviation: the bounded limit is eight: current
+  // production/development origins plus two slots for future custom domains.)
   let publicAllowedOrigins = [];
-  if (configuredAllowedOrigins.length > 0 && configuredAllowedOrigins.length <= 6) {
+  if (configuredAllowedOrigins.length > 0 && configuredAllowedOrigins.length <= 8) {
     const validatedOrigins = [];
     let originConfigurationIsValid = true;
     for (const configuredOrigin of configuredAllowedOrigins) {
