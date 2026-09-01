@@ -45,6 +45,7 @@ module "helixctw" {
   allowed_origins = [
     "https://helixctw.com",
     "https://www.helixctw.com",
+    "https://helixctw-gcp-testwired-enterpisezk-labs-projects.vercel.app",
     "http://localhost:5173",
     "http://localhost:5178",
   ]
