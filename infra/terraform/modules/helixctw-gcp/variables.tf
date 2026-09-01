@@ -35,6 +35,16 @@ variable "allowed_origins" {
   default     = []
 }
 
+variable "release_commit" {
+  description = "40-hex git commit the deployed image was built from. The judge API reports it as releaseCommit; the browser refuses mutations unless health and status agree on it."
+  type        = string
+
+  validation {
+    condition     = can(regex("^[0-9a-f]{40}$", var.release_commit))
+    error_message = "release_commit must be a 40-character lowercase git commit hash."
+  }
+}
+
 variable "database_url" {
   description = "CockroachDB connection URL for the didz-testwired cluster. Provide via TF_VAR_database_url — NEVER commit it."
   type        = string

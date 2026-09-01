@@ -146,6 +146,16 @@ resource "google_cloud_run_v2_service" "compliance" {
         name  = "HELIXCTW_ALLOWED_ORIGINS"
         value = join(",", var.allowed_origins)
       }
+      # Consumed by the ported judge API (/judge): the release the image was
+      # built from, and the region for Cloud Run runtime validation.
+      env {
+        name  = "HELIXCTW_RELEASE_COMMIT"
+        value = var.release_commit
+      }
+      env {
+        name  = "HELIXCTW_GCP_REGION"
+        value = var.region
+      }
       # The secret is mounted as an env var straight from Secret Manager —
       # it never passes through Terraform state or the container image.
       env {

@@ -38,6 +38,7 @@ module "helixctw" {
   environment     = "testwired-dev"
   container_image = var.container_image
   database_url    = var.database_url
+  release_commit  = var.release_commit
 
   # Browser origins that may call this API: the shared frontend (Cloudflare
   # Pages at helixctw.com) plus localhost for development.
@@ -51,6 +52,11 @@ module "helixctw" {
 
 variable "container_image" {
   description = "Image to deploy, e.g. us-east1-docker.pkg.dev/helixctw-gcp-testwired/helixctw/compliance:TAG"
+  type        = string
+}
+
+variable "release_commit" {
+  description = "Git commit the deployed container was built from, e.g. $(git rev-parse HEAD)"
   type        = string
 }
 
