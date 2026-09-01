@@ -3,7 +3,7 @@
 //
 // Routes (same contract as the Cloudflare Worker, plus the TestWired status
 // probe pattern from the AWS edition):
-//   GET  /healthz                    liveness only, no downstream probes
+//   GET  /health                     liveness only, no downstream probes
 //   GET  /                           service identity (Worker GET parity)
 //   GET  /api/v1/status              TestWired status + provider probes
 //   POST /                           compliance check (Worker POST parity)
@@ -234,7 +234,7 @@ const server = createServer(async (request, response) => {
       return response.end();
     }
 
-    if (request.method === "GET" && path === "/healthz") {
+    if (request.method === "GET" && path === "/health") {
       return sendJson(request, response, { ok: true, service: SERVICE_NAME });
     }
 

@@ -159,6 +159,7 @@ resource "google_cloud_run_v2_service" "compliance" {
       }
 
       resources {
+        cpu_idle = true
         limits = {
           cpu    = "1"
           memory = "256Mi"
