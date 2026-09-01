@@ -75,6 +75,19 @@ Port `create_run`, `close_session`, `recall`, the three actions, and receipts:
 | Mutations | 503 `LIVE_PROVIDERS_NOT_CONNECTED` (verified); `memorySlice.available: false` |
 | helixctw.com chooser | Google Cloud card hands off via `externalUrl` |
 
+## Stage B completion record (2026-09-01)
+
+| Item | Value |
+|---|---|
+| Release commit (API image `testwired-v7`) | `ebd1822c2f2d97489a3325f4eb45dc89b2694a79` |
+| Image digest | `sha256:da3ff606ddecbbf2b0fdf39edf3d7362bcb75cb91f77a8d9bb64c44310efcf30` |
+| Memory database | `mhelix_gcp_testwired` on `didz-testwired`; owner `mhelix_gcp_migrator` (NOLOGIN), runtime `mhelix_gcp_runtime` (least privilege, 25-grant matrix verified by 49 boolean readbacks) |
+| Capability | `vector_memory_recall` release-bound row (rotated `f95112a` → `4c84e49` → `ebd1822`, one row at all times) |
+| Live journey | All seven checkpoints + supplemental receipt retrieval verified in the production browser; recall returns 2 vector matches; denial returns zero protected fields; rebuild preserves the evidence commitment |
+| Receipt evidence | Fetched receipts bind the stored original GCP request (`LIVE_TESTWIRED`/`REALDEAL_TEST`); Midnight stays `SOURCE_ONLY` (deterministic fixture, never promoted) |
+| Narration | Seven pre-generated `gemini-3.1-flash-tts-preview` "Charon" clips (static, -16 LUFS); Web Speech fallback |
+| Tests | 73 service + 99 web, all passing |
+
 ## Decisions of record
 
 | Decision | Choice |
