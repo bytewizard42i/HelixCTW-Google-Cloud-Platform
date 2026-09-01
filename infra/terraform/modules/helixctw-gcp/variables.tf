@@ -46,7 +46,14 @@ variable "release_commit" {
 }
 
 variable "database_url" {
-  description = "CockroachDB connection URL for the didz-testwired cluster. Provide via TF_VAR_database_url — NEVER commit it."
+  description = "Read-only probe URL for helix_testtown. Provide via TF_VAR_database_url — NEVER commit it."
+  type        = string
+  sensitive   = true
+  ephemeral   = true # write-only: excluded from plan/state files
+}
+
+variable "vector_database_url" {
+  description = "Least-privilege mhelix_gcp_runtime URL for mhelix_gcp_testwired. Provide via TF_VAR_vector_database_url — NEVER commit it."
   type        = string
   sensitive   = true
   ephemeral   = true # write-only: excluded from plan/state files

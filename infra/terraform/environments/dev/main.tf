@@ -33,12 +33,13 @@ provider "google" {
 module "helixctw" {
   source = "../../modules/helixctw-gcp"
 
-  project_id      = "helixctw-gcp-testwired"
-  region          = "us-east1"
-  environment     = "testwired-dev"
-  container_image = var.container_image
-  database_url    = var.database_url
-  release_commit  = var.release_commit
+  project_id          = "helixctw-gcp-testwired"
+  region              = "us-east1"
+  environment         = "testwired-dev"
+  container_image     = var.container_image
+  database_url        = var.database_url
+  vector_database_url = var.vector_database_url
+  release_commit      = var.release_commit
 
   # Browser origins that may call this API: the shared frontend (Cloudflare
   # Pages at helixctw.com) plus localhost for development.
@@ -63,7 +64,14 @@ variable "release_commit" {
 }
 
 variable "database_url" {
-  description = "didz-testwired CockroachDB URL (TF_VAR_database_url; never commit)"
+  description = "didz-testwired read-only probe URL (TF_VAR_database_url; never commit)"
+  type        = string
+  sensitive   = true
+  ephemeral   = true
+}
+
+variable "vector_database_url" {
+  description = "Dedicated Stage B runtime URL (TF_VAR_vector_database_url; never commit)"
   type        = string
   sensitive   = true
   ephemeral   = true

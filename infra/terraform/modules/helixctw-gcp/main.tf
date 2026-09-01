@@ -112,6 +112,33 @@ resource "google_secret_manager_secret_iam_member" "service_reads_db_url" {
   member    = "serviceAccount:${google_service_account.service.email}"
 }
 
+# The Stage B memory journey uses a separate least-privilege database identity.
+# Keeping it in a separate secret prevents the broad migration credential from
+# ever entering the Cloud Run runtime.
+resource "google_secret_manager_secret" "vector_database_url" {
+  project   = var.project_id
+  secret_id = "helixctw-gcp-vector-db-url"
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.apis]
+}
+
+resource "google_secret_manager_secret_version" "vector_database_url" {
+  secret                 = google_secret_manager_secret.vector_database_url.id
+  secret_data_wo         = var.vector_database_url # write-only: never stored in TF state
+  secret_data_wo_version = 1
+}
+
+resource "google_secret_manager_secret_iam_member" "service_reads_vector_db_url" {
+  project   = var.project_id
+  secret_id = google_secret_manager_secret.vector_database_url.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.service.email}"
+}
+
 # --- Cloud Run: the compliance service ----------------------------------------
 resource "google_cloud_run_v2_service" "compliance" {
   project  = var.project_id
@@ -167,6 +194,15 @@ resource "google_cloud_run_v2_service" "compliance" {
           }
         }
       }
+      env {
+        name = "HELIXCTW_GCP_VECTOR_DB_URL"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.vector_database_url.secret_id
+            version = "latest"
+          }
+        }
+      }
 
       resources {
         cpu_idle = true
@@ -182,6 +218,8 @@ resource "google_cloud_run_v2_service" "compliance" {
     google_project_service.apis,
     google_secret_manager_secret_version.database_url,
     google_secret_manager_secret_iam_member.service_reads_db_url,
+    google_secret_manager_secret_version.vector_database_url,
+    google_secret_manager_secret_iam_member.service_reads_vector_db_url,
   ]
 }
 
