@@ -9,7 +9,13 @@
 > vendor lock-in.
 
 **DIDzM role**: Data-layer engine (cloud infrastructure variation)
-**Status**: Infrastructure scaffold — not yet applied, not audited, not production deployed
+**Status**: TestWired — Cloud Run + GCS live with a verified CockroachDB
+environment probe (`didz-testwired`); the judge console (Stage A: status +
+provider evidence) is deployed at
+<https://helixctw-gcp-testwired.vercel.app>, and the compliance API at
+<https://helixctw-compliance-f2dbl6kvwa-ue.a.run.app> (judge contract under
+`/judge`). The five-route memory journey is Stage B (not yet deployed); not
+audited, not production.
 
 ---
 

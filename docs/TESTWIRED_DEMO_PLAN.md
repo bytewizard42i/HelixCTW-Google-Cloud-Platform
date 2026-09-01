@@ -63,6 +63,18 @@ Port `create_run`, `close_session`, `recall`, the three actions, and receipts:
 - Only then does `memorySlice.available` flip true and the journey unlock in
   the web app.
 
+## Stage A completion record (2026-09-01)
+
+| Item | Value |
+|---|---|
+| Release commit (API image `testwired-v4`) | `ca9e261ea38d4cd4d0ebe80a464057e3d15c0f63` |
+| Image digest | `sha256:800b9099392e51dd272fb6682483f6d04c00e590c20022b409c5df80ad6de871` |
+| Judge API base | `https://helixctw-compliance-f2dbl6kvwa-ue.a.run.app/judge` |
+| Judge console | `https://helixctw-gcp-testwired.vercel.app` (Vercel project `helixctw-gcp-testwired`, root `web/`) |
+| Live evidence | `gcp` REALDEAL_TEST/CONNECTED (validated Cloud Run runtime), `cockroachdb` REALDEAL_TEST/CONNECTED (marker probe), all other rows SOURCE_ONLY/NOT_CONNECTED |
+| Mutations | 503 `LIVE_PROVIDERS_NOT_CONNECTED` (verified); `memorySlice.available: false` |
+| helixctw.com chooser | Google Cloud card hands off via `externalUrl` |
+
 ## Decisions of record
 
 | Decision | Choice |
