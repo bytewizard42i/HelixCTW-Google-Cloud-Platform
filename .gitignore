@@ -35,5 +35,8 @@ node_modules/
 web/dist/
 .env.local
 
+# Rendered videos — large binaries stay out of Git (sources are committed)
+media/videos/
+
 # Windows Mark-of-the-Web
 *:Zone.Identifier
