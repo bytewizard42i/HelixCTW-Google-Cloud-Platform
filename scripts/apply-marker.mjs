@@ -21,10 +21,9 @@
 
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
+import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-
-import pg from "pg";
 
 import {
   HELIXCTW_GCP_ENVIRONMENT_MARKER_MANIFEST,
@@ -32,6 +31,8 @@ import {
 } from "../service/src/environment-marker.js";
 
 const repositoryRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
+const requireFromService = createRequire(join(repositoryRoot, "service/package.json"));
+const pg = requireFromService("pg");
 const manifest = HELIXCTW_GCP_ENVIRONMENT_MARKER_MANIFEST;
 
 const databaseUrl = process.env.HELIXCTW_GCP_DB_URL;
@@ -54,8 +55,9 @@ if (actualSha256 !== manifest.migrationSha256) {
 }
 
 const statements = migrationSql
+  .replace(/^--.*$/gm, "")
   .split(";")
-  .map((statement) => statement.replace(/^--.*$/gm, "").trim())
+  .map((statement) => statement.trim())
   .filter((statement) => statement.length > 0);
 if (statements.length !== manifest.statementCount) {
   console.error(

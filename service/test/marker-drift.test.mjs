@@ -31,8 +31,11 @@ test("manifest statementCount matches the migration file on disk", async () => {
     "utf8",
   );
   const statements = migrationSql
+    .replace(/^--.*$/gm, "")
     .split(";")
-    .map((statement) => statement.replace(/^--.*$/gm, "").trim())
+    .map((statement) => statement.trim())
     .filter((statement) => statement.length > 0);
   assert.equal(statements.length, manifest.statementCount);
+  assert.match(statements[0], /^CREATE SCHEMA IF NOT EXISTS helixctw_gcp$/);
+  assert.match(statements[1], /^CREATE TABLE IF NOT EXISTS helixctw_gcp\.environment_markers/);
 });
