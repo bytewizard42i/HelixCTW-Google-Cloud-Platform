@@ -1,0 +1,1406 @@
+{
+  "schema": "mhelixctw/memory-corpus/v1",
+  "embeddingModelId": "mhelixctw-synthetic-embedding-v1",
+  "embeddingDimensions": 8,
+  "embeddingEvidence": "MOCK",
+  "upstreamSource": {
+    "repository": "https://github.com/bytewizard42i/TestTownDIDz",
+    "license": "Apache-2.0",
+    "note": "Synthetic town dossiers. Only public-safe fields are derived here; protected values are never copied, only their field names."
+  },
+  "privacyBoundary": {
+    "publicSafeFields": [
+      "displayName",
+      "category",
+      "honesty.role",
+      "employment.role",
+      "employment.employerSlug",
+      "authority.issuerType",
+      "authority.requestedAssuranceLevel",
+      "authority.attestationScopes",
+      "authority.subjectTiers",
+      "identifiers.founded (year only)"
+    ],
+    "protectedFieldNames": [
+      "ein",
+      "stateRegistration",
+      "born",
+      "birthRecordIssuer",
+      "documents",
+      "officers"
+    ],
+    "rule": "Protected values are never stored in this repository or in the vector table. The disclosure route must return zero protected fields."
+  },
+  "entryCount": 63,
+  "entries": [
+    {
+      "fixtureId": "testtown-animals-biscuit-the-corgi",
+      "category": "animal",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Biscuit (Pembroke Welsh Corgi, b. 2022) is a TestTown animal, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.503283686297,
+        0.322364025719,
+        0.491468368982,
+        0.502370702535,
+        0.083963225907,
+        0.164458142935,
+        0.186631101464,
+        0.282740187165
+      ],
+      "embeddingCommitmentHex": "160b87e636a60aac9eb850f94dfdd8718cedb2ee1f9a53e529e713a197eb6dbd",
+      "protectedFieldNames": []
+    },
+    {
+      "fixtureId": "testtown-animals-comet-the-thoroughbred",
+      "category": "animal",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Comet (Thoroughbred gelding, b. 2019) is a TestTown animal, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.128243916351,
+        0.471851266822,
+        0.174676830815,
+        -0.339123676854,
+        0.469698040565,
+        -0.284907444345,
+        -0.468913974779,
+        0.306144083062
+      ],
+      "embeddingCommitmentHex": "fa55c40bab01ba3397d570805e878e6d3664a5a1a22d86b9b39b8f373bd56552",
+      "protectedFieldNames": []
+    },
+    {
+      "fixtureId": "testtown-animals-duchess-the-warmblood",
+      "category": "animal",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Duchess (Hanoverian mare, b. 2017) is a TestTown animal, recorded as an authentic TestTown participant.",
+      "embedding": [
+        -0.361592715418,
+        -0.545546320767,
+        -0.053552757606,
+        0.403310920176,
+        -0.134194744976,
+        -0.599301649345,
+        -0.057230679826,
+        0.160175768058
+      ],
+      "embeddingCommitmentHex": "238ef4d032303300365169df9967c4891b1c3100da4bdb990f89e3236078e359",
+      "protectedFieldNames": []
+    },
+    {
+      "fixtureId": "testtown-animals-smokey-the-barn-cat",
+      "category": "animal",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Smokey (domestic shorthair, b. 2020) is a TestTown animal, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.480160968442,
+        0.427763387221,
+        0.477050539869,
+        -0.315985059154,
+        0.193689398963,
+        -0.42288325931,
+        0.203553328249,
+        0.035501577787
+      ],
+      "embeddingCommitmentHex": "252fbe7394d997fe385f585d69e1d95cd0811e0e58e63d035274a40cab005034",
+      "protectedFieldNames": []
+    },
+    {
+      "fixtureId": "testtown-assets-fairweather-pickup-truck",
+      "category": "asset",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Fairweather 2018 pickup truck is a TestTown asset, recorded as an authentic TestTown participant.",
+      "embedding": [
+        -0.414301617371,
+        0.424068866422,
+        -0.205490987345,
+        0.116366918733,
+        0.220021562818,
+        0.330696193602,
+        0.462932279531,
+        0.469761859586
+      ],
+      "embeddingCommitmentHex": "615a1c773327bfaadd484874b2001d4c26fd140adb4afea5f6e16331e01c741f",
+      "protectedFieldNames": []
+    },
+    {
+      "fixtureId": "testtown-assets-heirloom-lange-1815-wristwatch",
+      "category": "asset",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "A. Lange-style 1815 heirloom wristwatch (fictional) is a TestTown asset, recorded as an authentic TestTown participant.",
+      "embedding": [
+        -0.370153229002,
+        0.494079337741,
+        -0.364438707185,
+        -0.240676743856,
+        -0.19388446855,
+        -0.130803370623,
+        -0.540295672455,
+        0.285501674539
+      ],
+      "embeddingCommitmentHex": "7dca29938bc344957483ab029809b7f53537fdd76768a379127a550fb3eb54bd",
+      "protectedFieldNames": []
+    },
+    {
+      "fixtureId": "testtown-assets-morrow-family-farmhouse",
+      "category": "asset",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Morrow family farmhouse, 44 Quarry Road is a TestTown asset, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.317064419381,
+        0.547234164355,
+        -0.375119584959,
+        0.337072546635,
+        -0.466607207393,
+        -0.156923680789,
+        -0.070038640362,
+        -0.313718950469
+      ],
+      "embeddingCommitmentHex": "c18b716f749b098e62c7722a164f2380674e9258b5d9a959305877fd76a2d1f9",
+      "protectedFieldNames": []
+    },
+    {
+      "fixtureId": "testtown-assets-zhao-grand-seiko-snowflake",
+      "category": "asset",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Zhao Grand Seiko-style 'Snowflake' wristwatch (fictional) is a TestTown asset, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.276799195289,
+        0.567424999912,
+        0.142704501389,
+        0.390599167329,
+        0.138351202246,
+        -0.300601460731,
+        0.551275991962,
+        0.12276513372
+      ],
+      "embeddingCommitmentHex": "b15e8b0b49b9d3e97de782ed8fe3bffb1340db83d6304653930290733fffbae9",
+      "protectedFieldNames": []
+    },
+    {
+      "fixtureId": "testtown-citizens-amos-fairweather",
+      "category": "citizen",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Amos Fairweather is a TestTown citizen, working as Foreman for Susquehanna Steelworks, recorded as an authentic TestTown participant.",
+      "embedding": [
+        -0.070577379389,
+        0.710303432342,
+        0.482290796832,
+        -0.013256366152,
+        0.027962875684,
+        0.187569081772,
+        -0.469500394766,
+        0.036235618257
+      ],
+      "embeddingCommitmentHex": "a668d89a0fe2406e6cd79ed8a1428a662d637e9e42f78314d00caaa8fb6d45f3",
+      "protectedFieldNames": [
+        "born",
+        "birthRecordIssuer"
+      ]
+    },
+    {
+      "fixtureId": "testtown-citizens-anya-petrova",
+      "category": "citizen",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Anya Petrova is a TestTown citizen, working as Pharmacist for Foxglove Pharmacy, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.042090082561,
+        0.580701946373,
+        -0.394793197321,
+        -0.593011907378,
+        0.058445742611,
+        -0.297575737444,
+        -0.195242958046,
+        -0.152976620678
+      ],
+      "embeddingCommitmentHex": "2aec46fd8fbe97eb4bec9e39c76d943297a80640582b2f12614fc09fa750c27f",
+      "protectedFieldNames": [
+        "born",
+        "birthRecordIssuer"
+      ]
+    },
+    {
+      "fixtureId": "testtown-citizens-bonnie-lachance",
+      "category": "citizen",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Bonnie LaChance is a TestTown citizen, working as Line Cook for Copper Kettle Diner, recorded as an authentic TestTown participant.",
+      "embedding": [
+        -0.457945031011,
+        0.428372419343,
+        0.15034966834,
+        0.110639483526,
+        0.040654921721,
+        -0.306738443752,
+        -0.525510224575,
+        0.447252735224
+      ],
+      "embeddingCommitmentHex": "e2d53389f68921bfbca9d99c882a37e1ed0f40fc4bf5f46723364c3ce3c6cbfb",
+      "protectedFieldNames": [
+        "born",
+        "birthRecordIssuer"
+      ]
+    },
+    {
+      "fixtureId": "testtown-citizens-colin-mcbride",
+      "category": "citizen",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Colin McBride is a TestTown citizen, working as Master Plumber for Clearwater Plumbing Heating, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.056545117197,
+        -0.520174080837,
+        0.402881943845,
+        -0.283107075188,
+        -0.086189297929,
+        0.589025352696,
+        0.20793837836,
+        0.293496623927
+      ],
+      "embeddingCommitmentHex": "67bd6462949c6489d373091b365fe466340939478896d2f54502141dbae96994",
+      "protectedFieldNames": [
+        "born",
+        "birthRecordIssuer"
+      ]
+    },
+    {
+      "fixtureId": "testtown-citizens-diego-marchetti",
+      "category": "citizen",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Diego Marchetti is a TestTown citizen, working as Head Baker for Blue Heron Bakery, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.147811735549,
+        -0.422557844736,
+        0.38583122552,
+        -0.3423674954,
+        -0.393531741017,
+        0.335547750113,
+        0.420873658881,
+        -0.298196515171
+      ],
+      "embeddingCommitmentHex": "ffb2e80fdb2e326d094b43a4d5a4508adc88e290ac6dae0892726f84edcbb026",
+      "protectedFieldNames": [
+        "born",
+        "birthRecordIssuer"
+      ]
+    },
+    {
+      "fixtureId": "testtown-citizens-edgar-morrow",
+      "category": "citizen",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Edgar Morrow is a TestTown citizen, working as Master Joiner for Anvil Oak Furniture Makers, recorded as an authentic TestTown participant.",
+      "embedding": [
+        -0.425423685226,
+        -0.371871925009,
+        -0.130398346482,
+        -0.314265638096,
+        0.384198560005,
+        -0.213090384239,
+        0.424324974315,
+        0.438054346164
+      ],
+      "embeddingCommitmentHex": "5102341bb6f8beab19bce144263a4e8381071e586ceddcf776826dc4bf1b2c4b",
+      "protectedFieldNames": [
+        "born",
+        "birthRecordIssuer"
+      ]
+    },
+    {
+      "fixtureId": "testtown-citizens-fern-whitaker",
+      "category": "citizen",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Fern Whitaker is a TestTown citizen, working as Floral Designer for Petal Stem Florists, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.117558428172,
+        -0.306763006069,
+        0.021260864747,
+        0.53754480625,
+        0.179159063785,
+        -0.475493028245,
+        -0.579765229942,
+        0.091382268964
+      ],
+      "embeddingCommitmentHex": "7d1363a3a29d7204c996e13fbd145d36aa77f980c441be04fb8930a03fc30210",
+      "protectedFieldNames": [
+        "born",
+        "birthRecordIssuer"
+      ]
+    },
+    {
+      "fixtureId": "testtown-citizens-harold-quist",
+      "category": "citizen",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Harold Quist is a TestTown citizen, working as Owner-Clerk for Maple Main Bookshop, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.168413344107,
+        -0.264995393416,
+        -0.396356341617,
+        -0.079508510747,
+        0.171752255425,
+        0.651911740126,
+        0.463857828786,
+        0.261424166232
+      ],
+      "embeddingCommitmentHex": "e80e3b86f7a2ab3c7dc48431da2a77227c78a72ceb4c3d551a9301d896c36f60",
+      "protectedFieldNames": [
+        "born",
+        "birthRecordIssuer"
+      ]
+    },
+    {
+      "fixtureId": "testtown-citizens-june-okafor",
+      "category": "citizen",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "June Okafor is a TestTown citizen, working as Registered Nurse for St Brigids General Hospital, recorded as an authentic TestTown participant.",
+      "embedding": [
+        -0.405768576954,
+        0.533401296924,
+        -0.525708361565,
+        -0.080948235738,
+        -0.420345226956,
+        0.038232230908,
+        0.219236949919,
+        -0.20419688194
+      ],
+      "embeddingCommitmentHex": "09c8b2a95852f143fe744bfa9a100a49fd0b4f520f4fd20a31a6d365b77380ad",
+      "protectedFieldNames": [
+        "born",
+        "birthRecordIssuer"
+      ]
+    },
+    {
+      "fixtureId": "testtown-citizens-keisha-lawton",
+      "category": "citizen",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Keisha Lawton is a TestTown citizen, working as Dispatcher for Testtown Transit Authority, recorded as an authentic TestTown participant.",
+      "embedding": [
+        -0.056923598512,
+        -0.229857802453,
+        0.28361642882,
+        -0.023791981821,
+        0.614677966395,
+        -0.507616419159,
+        0.033229273598,
+        0.475723807995
+      ],
+      "embeddingCommitmentHex": "68a7b40ab7fba26e5e5c15fba8beeeb4829ecb78f5a6f40d4b848e5487fee5fd",
+      "protectedFieldNames": [
+        "born",
+        "birthRecordIssuer"
+      ]
+    },
+    {
+      "fixtureId": "testtown-citizens-lena-hartmann",
+      "category": "citizen",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Lena Hartmann is a TestTown citizen, working as Projectionist for Starlight Cinema, recorded as an authentic TestTown participant.",
+      "embedding": [
+        -0.537734857241,
+        -0.492395673009,
+        -0.064325931492,
+        0.2566589833,
+        -0.195317982418,
+        0.327379341964,
+        -0.154230655008,
+        -0.478813766086
+      ],
+      "embeddingCommitmentHex": "50f60f541bc4e4c0b8d83de9a36121a0c234682aa2f11f0112586ad112fe8af7",
+      "protectedFieldNames": [
+        "born",
+        "birthRecordIssuer"
+      ]
+    },
+    {
+      "fixtureId": "testtown-citizens-marcus-reid",
+      "category": "citizen",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Marcus Reid is a TestTown citizen, working as Long-Haul Driver for Quarry Road Trucking, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.085608722587,
+        -0.347962376533,
+        -0.341959224276,
+        0.578486979002,
+        -0.192253429633,
+        0.493923453242,
+        0.298830981728,
+        -0.223132966376
+      ],
+      "embeddingCommitmentHex": "9f6ed025dceae8f6925dd9b3d286446561106027b21a8edda0773ce9beef1b00",
+      "protectedFieldNames": [
+        "born",
+        "birthRecordIssuer"
+      ]
+    },
+    {
+      "fixtureId": "testtown-citizens-mei-lin-zhao",
+      "category": "citizen",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Mei-Lin Zhao is a TestTown citizen, working as Systems Engineer for Nightowl Data Systems, recorded as an authentic TestTown participant.",
+      "embedding": [
+        -0.392693452849,
+        0.073168110743,
+        -0.427794879842,
+        0.081955004243,
+        0.527846539605,
+        -0.492852423285,
+        -0.358765641363,
+        0.02179292974
+      ],
+      "embeddingCommitmentHex": "1c3cabcdcbd4d47023c812abb3ca7e9793e5be45b47c2ca02a61a9d13beeb577",
+      "protectedFieldNames": [
+        "born",
+        "birthRecordIssuer"
+      ]
+    },
+    {
+      "fixtureId": "testtown-citizens-olaf-bjornsen",
+      "category": "citizen",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Olaf Bjornsen is a TestTown citizen, working as Site Supervisor for Riverbend Construction Co, recorded as an authentic TestTown participant.",
+      "embedding": [
+        -0.155375405642,
+        0.395525789289,
+        -0.107696600828,
+        -0.149896925995,
+        -0.655373270999,
+        0.2665814676,
+        0.530514375162,
+        0.057661786441
+      ],
+      "embeddingCommitmentHex": "131ff778f7046c736f1757bde6f41733520a44096e5f654d7fc6077df00c7e38",
+      "protectedFieldNames": [
+        "born",
+        "birthRecordIssuer"
+      ]
+    },
+    {
+      "fixtureId": "testtown-citizens-priscilla-vance",
+      "category": "citizen",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Priscilla Vance is a TestTown citizen, working as Branch Manager for Testtown Savings Loan, recorded as an authentic TestTown participant.",
+      "embedding": [
+        -0.525780053025,
+        -0.350266422162,
+        -0.436646196175,
+        -0.224287140053,
+        -0.420146983746,
+        0.177089478329,
+        0.372009793903,
+        0.116741978201
+      ],
+      "embeddingCommitmentHex": "8fe1e7eaea72a2e70c7bac89c6898922ff6b9244ec39afad6ced88356bb1cddc",
+      "protectedFieldNames": [
+        "born",
+        "birthRecordIssuer"
+      ]
+    },
+    {
+      "fixtureId": "testtown-citizens-raj-patel",
+      "category": "citizen",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Raj Patel is a TestTown citizen, working as Owner for Summit Peak Outfitters, recorded as an authentic TestTown participant.",
+      "embedding": [
+        -0.338765256079,
+        0.322735843739,
+        0.209796419721,
+        -0.111306248787,
+        0.475615700055,
+        0.19310574357,
+        -0.380823310213,
+        0.56227176859
+      ],
+      "embeddingCommitmentHex": "0cb69373b01166b89c588d479e8145eb03a1107490523c96994af1ab7b37a222",
+      "protectedFieldNames": [
+        "born",
+        "birthRecordIssuer"
+      ]
+    },
+    {
+      "fixtureId": "testtown-citizens-rosa-delgado",
+      "category": "citizen",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Rosa Delgado is a TestTown citizen, working as Service Manager for Torque And Timing Auto Works, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.431994423046,
+        0.345799186787,
+        0.397168751274,
+        -0.314201556667,
+        -0.554553766365,
+        0.341699859502,
+        -0.111226357834,
+        0.026040914411
+      ],
+      "embeddingCommitmentHex": "0d4b68fb32d7abc02b289e54983dcb56f0d4c0a93e96964f46e5ba3689495882",
+      "protectedFieldNames": [
+        "born",
+        "birthRecordIssuer"
+      ]
+    },
+    {
+      "fixtureId": "testtown-citizens-sadie-blackfeather",
+      "category": "citizen",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Sadie Blackfeather is a TestTown citizen, working as Curator for Gilded Frame Art Gallery, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.342081850555,
+        0.315683773442,
+        -0.313728278989,
+        0.437345362621,
+        -0.344361675521,
+        0.355811018964,
+        0.374100738927,
+        0.329377527791
+      ],
+      "embeddingCommitmentHex": "31211b5ba0c0b8b8feec93b1e55c82ac9b9fe3adb7dab46ac882be43c9c55614",
+      "protectedFieldNames": [
+        "born",
+        "birthRecordIssuer"
+      ]
+    },
+    {
+      "fixtureId": "testtown-citizens-theo-brandt",
+      "category": "citizen",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Theo Brandt is a TestTown citizen, working as Claims Adjuster for Ironclad Insurance Group, recorded as an authentic TestTown participant.",
+      "embedding": [
+        -0.170360342997,
+        0.478541936551,
+        -0.492643875942,
+        0.627064046687,
+        0.180801508648,
+        -0.055725299475,
+        0.026057157475,
+        -0.263807110137
+      ],
+      "embeddingCommitmentHex": "e8739ae89fd4d493cdd943881419fafad9b52a0c7305e2e58158e93eefcac7b6",
+      "protectedFieldNames": [
+        "born",
+        "birthRecordIssuer"
+      ]
+    },
+    {
+      "fixtureId": "testtown-citizens-victor-osei",
+      "category": "citizen",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Victor Osei is a TestTown citizen, working as Store Manager for Harvest Moon Grocers, recorded as an authentic TestTown participant.",
+      "embedding": [
+        -0.429081954381,
+        -0.147626278321,
+        0.503635250037,
+        0.161735986602,
+        -0.170878641047,
+        -0.463398072514,
+        0.162064676865,
+        0.494050524612
+      ],
+      "embeddingCommitmentHex": "f453a824ab9d2eae305eb823554d2bec9614ee28c6f165e2e72fde9ead47e351",
+      "protectedFieldNames": [
+        "born",
+        "birthRecordIssuer"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-anvil-oak-furniture-makers",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Anvil & Oak Furniture Makers is a TestTown organization, acting as a employer issuer, at requested assurance level PEER_REVIEWED, attesting scopes EMPLOYMENT and INCOME_RANGE, for subject tiers human, established 2000, recorded as an authentic TestTown participant.",
+      "embedding": [
+        -0.024388478803,
+        0.130521464879,
+        0.419392443484,
+        0.343209868655,
+        -0.47703926113,
+        0.145865203745,
+        -0.378284987067,
+        -0.544741836057
+      ],
+      "embeddingCommitmentHex": "466c1319b77fc3dff603c1cdeb55cc262d7520b2cc218470127b6ba34f74dd19",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-blue-heron-bakery",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Blue Heron Bakery is a TestTown organization, acting as a employer issuer, at requested assurance level PEER_REVIEWED, attesting scopes EMPLOYMENT and INCOME_RANGE, for subject tiers human, established 1967, recorded as an authentic TestTown participant.",
+      "embedding": [
+        -0.26139773303,
+        -0.284847829503,
+        0.383484614574,
+        0.538826431454,
+        0.155295266167,
+        0.058735891809,
+        0.341354353418,
+        0.518699573037
+      ],
+      "embeddingCommitmentHex": "c0beb80f7aa9fd4eae269ec2626fd78ba03d47cf4dc31827d12a0a035ec7d34b",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-clearwater-plumbing-heating",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Clearwater Plumbing & Heating is a TestTown organization, acting as a employer issuer, at requested assurance level PEER_REVIEWED, attesting scopes EMPLOYMENT and INCOME_RANGE, for subject tiers human, established 2003, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.395775473789,
+        -0.067067674514,
+        0.402874237326,
+        0.451522877736,
+        0.344561426698,
+        -0.204108958104,
+        -0.356699957217,
+        -0.430192094461
+      ],
+      "embeddingCommitmentHex": "7c7d6fddda1f9d4d1ee58516b2a99171e686e3ecab22d9e5d14eec5947e25ebf",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-commonwealth-dmv-testtown-office",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Commonwealth Department of Motor Vehicles, TestTown Office is a TestTown organization, acting as a dmv issuer, at requested assurance level SYSTEM_CRITICAL, attesting scopes DRIVERS_LICENSE and VEHICLE_TITLE, for subject tiers human and rwa, established 1971, recorded as an authentic TestTown participant.",
+      "embedding": [
+        -0.282926911402,
+        -0.047164274512,
+        0.32147611574,
+        -0.2084260268,
+        0.572700965838,
+        0.428609367691,
+        0.13156716693,
+        0.491871209381
+      ],
+      "embeddingCommitmentHex": "7f5d454c38bbea37e4ff1dbbc8984f25915f47a60941bbae2a1d2bfb9f64f1af",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-copper-kettle-diner",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Copper Kettle Diner is a TestTown organization, acting as a employer issuer, at requested assurance level PEER_REVIEWED, attesting scopes EMPLOYMENT and INCOME_RANGE, for subject tiers human, established 1970, recorded as an authentic TestTown participant.",
+      "embedding": [
+        -0.115063222542,
+        -0.159817336413,
+        -0.583529178877,
+        -0.203733482576,
+        -0.123901177696,
+        -0.123286840951,
+        0.627889773406,
+        -0.392948501387
+      ],
+      "embeddingCommitmentHex": "0ac8fae9581744e887743b0f98f72ec3c881d740581523f36f647804830905c4",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-foxglove-pharmacy",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Foxglove Pharmacy is a TestTown organization, acting as a employer issuer, at requested assurance level PEER_REVIEWED, attesting scopes EMPLOYMENT and INCOME_RANGE, for subject tiers human, established 2006, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.048905579199,
+        0.029738655989,
+        -0.028492229936,
+        0.544962444277,
+        -0.451104200972,
+        -0.30808720044,
+        0.453141247227,
+        -0.441789848996
+      ],
+      "embeddingCommitmentHex": "38b622fdfca8d97be8caafc601f8a0003a80e0672229f89548194b68d5d12e86",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-gilded-frame-art-gallery",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Gilded Frame Art Gallery is a TestTown organization, acting as a employer issuer, at requested assurance level PEER_REVIEWED, attesting scopes EMPLOYMENT and INCOME_RANGE, for subject tiers human, established 2012, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.274466461658,
+        0.574994767833,
+        0.220366637048,
+        0.106081313618,
+        0.400052356519,
+        0.074838354621,
+        0.342343252393,
+        -0.501390974021
+      ],
+      "embeddingCommitmentHex": "8c4b5d1798db817b515166837a4ab0739a3807cb4d0be90f2ed700ab119f7246",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-green-gable-landscaping",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Green Gable Landscaping is a TestTown organization, acting as a employer issuer, at requested assurance level PEER_REVIEWED, attesting scopes EMPLOYMENT and INCOME_RANGE, for subject tiers human, established 1982, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.121224177651,
+        -0.261949605384,
+        -0.176091623954,
+        -0.666253890874,
+        0.468838788767,
+        -0.105202460313,
+        -0.333054366771,
+        -0.316199331318
+      ],
+      "embeddingCommitmentHex": "db6885123c13f22d9d0953cb8ad50c326c34b8aef56b7ce971ae8f607c3852d5",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-harvest-moon-grocers",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Harvest Moon Grocers is a TestTown organization, acting as a employer issuer, at requested assurance level PEER_REVIEWED, attesting scopes EMPLOYMENT and INCOME_RANGE, for subject tiers human, established 1985, recorded as an authentic TestTown participant.",
+      "embedding": [
+        -0.032779236024,
+        0.313105664958,
+        0.097142297324,
+        -0.703478035859,
+        0.017493829272,
+        0.542663034759,
+        -0.318211316862,
+        0.022907331938
+      ],
+      "embeddingCommitmentHex": "b25e7c91f56ad642deae0d6d957f5940576d0f17e5f7954515c5c4f5fd9ba1c1",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-hearthstone-realty-group",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Hearthstone Realty Group is a TestTown organization, acting as a real-estate issuer, at requested assurance level REGULATED_ENTITY, attesting scopes DEED and APPRAISAL, for subject tiers rwa, established 1995, recorded as an authentic TestTown participant.",
+      "embedding": [
+        -0.311349598167,
+        -0.266154672122,
+        -0.448622551219,
+        0.104109398581,
+        -0.493916773929,
+        -0.481566569566,
+        -0.379665725717,
+        -0.010768199373
+      ],
+      "embeddingCommitmentHex": "edad1de2bcfaebe3829ce88186f5faeedda623e87fb958ebec232a2a92566f2b",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-ironclad-insurance-group",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Ironclad Insurance Group is a TestTown organization, acting as a employer issuer, at requested assurance level PEER_REVIEWED, attesting scopes EMPLOYMENT and INCOME_RANGE, for subject tiers human, established 1961, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.300179902019,
+        -0.195424789087,
+        -0.713143257033,
+        0.098958107054,
+        -0.120353054543,
+        -0.218133529886,
+        -0.387568665507,
+        -0.375577689898
+      ],
+      "embeddingCommitmentHex": "88132edc0f30c709c1ab98daa998be9943ef9b0d0a6f733c3907e00ad89c33d7",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-keystone-ridge-college",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Keystone Ridge College is a TestTown organization, acting as a college issuer, at requested assurance level REGULATED_ENTITY, attesting scopes DEGREE and ENROLLMENT, for subject tiers human, established 1911, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.495217540285,
+        -0.176933493815,
+        -0.330601891868,
+        0.537991550821,
+        -0.365180557426,
+        -0.150491922837,
+        -0.244965873859,
+        0.329709977379
+      ],
+      "embeddingCommitmentHex": "8e17a774daeb796608d01c45c9b7587b054c1cf62732e6d52a933b192fab8fc6",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-maple-hollow-elementary-school",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Maple Hollow Elementary School is a TestTown organization, acting as a school-k12 issuer, at requested assurance level PEER_REVIEWED, attesting scopes EDUCATION_K12, for subject tiers human, established 1962, recorded as an authentic TestTown participant.",
+      "embedding": [
+        -0.390803971098,
+        -0.290237798076,
+        0.346552014986,
+        0.134506070005,
+        0.648107842661,
+        0.161691861106,
+        0.242246952166,
+        0.346370430728
+      ],
+      "embeddingCommitmentHex": "580902dd3e16b1b26926d3c4cc20e7ee1cc66ddd42bd9719490d316ef1bd2037",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-maple-hollow-middle-school",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Maple Hollow Middle School is a TestTown organization, acting as a school-k12 issuer, at requested assurance level PEER_REVIEWED, attesting scopes EDUCATION_K12, for subject tiers human, established 1962, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.458851720263,
+        -0.354594684142,
+        -0.405219274067,
+        0.409048282415,
+        0.029890780471,
+        0.456015774352,
+        0.336763439648,
+        -0.099705024291
+      ],
+      "embeddingCommitmentHex": "b9cebf46d14559dce66f0a4ed548efa71daa077463eda3ea2bfd36928c144100",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-maple-hollow-senior-high-school",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Maple Hollow Senior High School is a TestTown organization, acting as a school-k12 issuer, at requested assurance level PEER_REVIEWED, attesting scopes EDUCATION_K12 and DIPLOMA, for subject tiers human, established 1962, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.461127566832,
+        -0.428969732358,
+        0.092253515255,
+        0.501976511109,
+        0.349891798404,
+        0.152475655747,
+        -0.28391196088,
+        0.341432437431
+      ],
+      "embeddingCommitmentHex": "61e61a3c2ca8fa51104ef5219aeeae94e0bacdf0cd1ca9598cd7ba01055d8f72",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-maple-main-bookshop",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Maple & Main Bookshop is a TestTown organization, acting as a employer issuer, at requested assurance level PEER_REVIEWED, attesting scopes EMPLOYMENT and INCOME_RANGE, for subject tiers human, established 1976, recorded as an authentic TestTown participant.",
+      "embedding": [
+        -0.253239928496,
+        -0.471838834958,
+        -0.388635548476,
+        -0.435856124367,
+        0.296278163651,
+        -0.493752145905,
+        -0.201301365594,
+        0.01163314752
+      ],
+      "embeddingCommitmentHex": "8c23f0a9d9239ba3235773b54f15a892f0e3d633858f452727f6e46a9717cfbb",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-meridian-horological-appraisals",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Meridian Horological Appraisals LLC is a TestTown organization, acting as a appraiser issuer, at requested assurance level PEER_REVIEWED, attesting scopes AUTHENTICITY and APPRAISAL, for subject tiers rwa, established 2015, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.219965177612,
+        0.468390175516,
+        0.143866095255,
+        -0.468396658658,
+        -0.13427474795,
+        -0.346612051492,
+        -0.565169965552,
+        -0.185866534838
+      ],
+      "embeddingCommitmentHex": "67f76636db8e3dacfe30c8a6371d8c3d3177c77c28eea4ceb59f3dce3dc1364f",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-nightowl-data-systems",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Nightowl Data Systems is a TestTown organization, acting as a employer issuer, at requested assurance level PEER_REVIEWED, attesting scopes EMPLOYMENT and INCOME_RANGE, for subject tiers human, established 1973, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.029387747319,
+        0.163790631942,
+        -0.500377875752,
+        -0.494404450015,
+        -0.378475279254,
+        -0.407511424029,
+        -0.050286458917,
+        0.407010300593
+      ],
+      "embeddingCommitmentHex": "2ce6e62fa950b0a03375a07c3fcd412e0687a92fd31802d00a5273f6f97a01cf",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-petal-stem-florists",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Petal & Stem Florists is a TestTown organization, acting as a employer issuer, at requested assurance level PEER_REVIEWED, attesting scopes EMPLOYMENT and INCOME_RANGE, for subject tiers human, established 1994, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.182069720387,
+        0.511844626668,
+        0.283836835056,
+        -0.364847312842,
+        -0.473781369313,
+        -0.232541542374,
+        -0.092120232372,
+        0.451838790274
+      ],
+      "embeddingCommitmentHex": "4bb2de0846673b046b4c5befff8d19e21872e2f2b08e40b1a868e9b4e0577495",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-quarry-road-trucking",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Quarry Road Trucking is a TestTown organization, acting as a employer issuer, at requested assurance level PEER_REVIEWED, attesting scopes EMPLOYMENT and INCOME_RANGE, for subject tiers human, established 2015, recorded as an authentic TestTown participant.",
+      "embedding": [
+        -0.430912226412,
+        0.478884215592,
+        -0.346443664033,
+        0.115043702425,
+        0.374110518829,
+        0.1621990965,
+        -0.4750968336,
+        0.244421903415
+      ],
+      "embeddingCommitmentHex": "714958b8efedf343188a984e4f43c3dedd1417ba8f629a57b02d4406dc7e1c5f",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-riverbend-construction-co",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Riverbend Construction Co. is a TestTown organization, acting as a employer issuer, at requested assurance level PEER_REVIEWED, attesting scopes EMPLOYMENT and INCOME_RANGE, for subject tiers human, established 1988, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.389179542693,
+        -0.434321157828,
+        0.162233491183,
+        0.504398926518,
+        -0.006384644465,
+        -0.253418924269,
+        -0.236996318327,
+        0.508662228709
+      ],
+      "embeddingCommitmentHex": "fc78148a5ba7a785907182246ac1a7d40b7d58527631ab7fb02912eba9de6301",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-st-brigids-general-hospital",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "St. Brigid's General Hospital is a TestTown organization, acting as a hospital issuer, at requested assurance level REGULATED_ENTITY, attesting scopes BIRTH_CERTIFICATE and MEDICAL_RECORD, for subject tiers human, established 1987, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.006179378148,
+        0.429146332107,
+        0.446338608462,
+        0.19378426463,
+        0.110794099979,
+        -0.533345516584,
+        0.206664818963,
+        0.48947076139
+      ],
+      "embeddingCommitmentHex": "3ebb1af3101c5cf8e91987f09c4d5adbd0daf141b05a9e904151dcf62c683e6b",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-starlight-cinema",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Starlight Cinema is a TestTown organization, acting as a employer issuer, at requested assurance level PEER_REVIEWED, attesting scopes EMPLOYMENT and INCOME_RANGE, for subject tiers human, established 1991, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.208146291932,
+        0.438525859499,
+        0.50179523903,
+        -0.470424288809,
+        -0.468972996538,
+        0.192691019766,
+        0.179750875263,
+        -0.043552733015
+      ],
+      "embeddingCommitmentHex": "f2f6914e5773d767cbdcec11f7502968df017a0f028a2010eaa54081c1810479",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-summit-peak-outfitters",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Summit Peak Outfitters is a TestTown organization, acting as a employer issuer, at requested assurance level PEER_REVIEWED, attesting scopes EMPLOYMENT and INCOME_RANGE, for subject tiers human, established 2009, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.058434708709,
+        -0.414291002917,
+        0.447905835357,
+        0.019334180551,
+        0.452304548331,
+        -0.377868988304,
+        0.508674298521,
+        0.133570142983
+      ],
+      "embeddingCommitmentHex": "a583a3afde030171de8f8c835ec912b6494ed820848cded020db6fb344ce52b9",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-susquehanna-steelworks",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Susquehanna Steelworks is a TestTown organization, acting as a employer issuer, at requested assurance level PEER_REVIEWED, attesting scopes EMPLOYMENT and INCOME_RANGE, for subject tiers human, established 1958, recorded as an authentic TestTown participant.",
+      "embedding": [
+        -0.113837712828,
+        0.407125875756,
+        0.526967676246,
+        -0.081914003936,
+        0.1353909721,
+        -0.178408124623,
+        -0.583607057414,
+        0.382265992285
+      ],
+      "embeddingCommitmentHex": "534da075e92071ff958b6701f46dcbbb49787901306c4b089abe177c743dbb24",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-testtown-animal-hospital-and-equine-center",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "TestTown Animal Hospital & Equine Center is a TestTown organization, acting as a veterinary issuer, at requested assurance level REGULATED_ENTITY, attesting scopes VACCINATION and MICROCHIP_BINDING and HEALTH_CERT and LINEAGE, for subject tiers animal, established 1998, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.319956329293,
+        0.30434970744,
+        -0.13235594215,
+        -0.398433758282,
+        0.18092097918,
+        -0.4667863123,
+        -0.307263132188,
+        -0.532634164605
+      ],
+      "embeddingCommitmentHex": "a616f3ac9f9b5bd5b43a8fc0ee625ed0710ff62581fe11cb95bc4a0b75b012d6",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-testtown-courier-collective",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "TestTown Courier Collective is a TestTown organization, acting as a employer issuer, at requested assurance level PEER_REVIEWED, attesting scopes EMPLOYMENT and INCOME_RANGE, for subject tiers human, established 1997, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.409798758596,
+        0.445475351963,
+        -0.346628288039,
+        0.127812766498,
+        -0.277389548178,
+        0.431197505822,
+        0.29179386931,
+        0.386146995671
+      ],
+      "embeddingCommitmentHex": "a57cdb65f09dd461d007fd2a9efa206822828a9ee6885f1afdf90a6a5bea2130",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-testtown-savings-loan",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "TestTown Savings & Loan is a TestTown organization, acting as a employer issuer, at requested assurance level PEER_REVIEWED, attesting scopes EMPLOYMENT and INCOME_RANGE, for subject tiers human, established 1964, recorded as an authentic TestTown participant.",
+      "embedding": [
+        -0.194046024163,
+        -0.445188385114,
+        0.411795981387,
+        -0.247273590218,
+        -0.213318521811,
+        0.367876529585,
+        -0.59349411138,
+        0.01897605202
+      ],
+      "embeddingCommitmentHex": "3c452b8ef62d6f1f46b5854187f9e1d13c0366b5aa0b22d022caf0435043d4e7",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-testtown-social-security-field-office",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "TestTown Social Security Field Office is a TestTown organization, acting as a ssa issuer, at requested assurance level SYSTEM_CRITICAL, attesting scopes SSN_BINDING, for subject tiers human, established 1954, recorded as an authentic TestTown participant.",
+      "embedding": [
+        -0.352208062384,
+        -0.078345818804,
+        0.357514944479,
+        -0.052917687893,
+        0.45626198054,
+        -0.349188116733,
+        -0.402561438734,
+        0.497022281734
+      ],
+      "embeddingCommitmentHex": "06f9f45a9dc63fea0db7dc0d986bbb147b7dc669492196afe7ff0d6cfbbca0ee",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-testtown-transit-authority",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "TestTown Transit Authority is a TestTown organization, acting as a employer issuer, at requested assurance level PEER_REVIEWED, attesting scopes EMPLOYMENT and INCOME_RANGE, for subject tiers human, established 1979, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.229425810933,
+        0.269471420544,
+        0.326189218658,
+        0.238005063359,
+        0.550678631704,
+        0.215722165084,
+        0.398464282646,
+        -0.450717585375
+      ],
+      "embeddingCommitmentHex": "3c3a6cef45cd8413630d380db9a514b2386aaf2cb7e4b6879e41a46d6bdae2a9",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-torque-and-timing-auto-works",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Torque & Timing Auto Works is a TestTown organization, acting as a mechanic issuer, at requested assurance level PEER_REVIEWED, attesting scopes INSPECTION and SERVICE_RECORD, for subject tiers rwa, established 2010, recorded as an authentic TestTown participant.",
+      "embedding": [
+        -0.419186228766,
+        -0.21061983433,
+        -0.242163503248,
+        0.403001077475,
+        0.359003544103,
+        0.09256537191,
+        0.471576028658,
+        -0.446131501564
+      ],
+      "embeddingCommitmentHex": "bc4ffaa347b3af3da9077dba1b9b5b94f229830ea6023d351824fbf2beb589bf",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-evergreen-diploma-mill",
+      "category": "organization",
+      "honestyRole": "VILLAIN",
+      "publicSafeSummary": "Evergreen Institute of Advanced Studies is a TestTown organization, acting as a college issuer, at requested assurance level REGULATED_ENTITY, attesting scopes DEGREE and ENROLLMENT, for subject tiers human, established 2019, flagged by TestTown review as a fraudulent-credential risk.",
+      "embedding": [
+        0.436301701841,
+        -0.417302155301,
+        -0.198004489417,
+        0.362212692187,
+        -0.320880147462,
+        -0.139234160887,
+        -0.396390784128,
+        -0.430836453433
+      ],
+      "embeddingCommitmentHex": "c73cf27de0987e5fb7dd66d3e3fa80a94e3dc8a791f73be0a5beab4875f0e4cf",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-first-dmv-of-delaware",
+      "category": "organization",
+      "honestyRole": "VILLAIN",
+      "publicSafeSummary": "First DMV of Delaware Inc. is a TestTown organization, acting as a dmv issuer, at requested assurance level SYSTEM_CRITICAL, attesting scopes DRIVERS_LICENSE and VEHICLE_TITLE, for subject tiers human and rwa, established 1988, flagged by TestTown review as a fraudulent-credential risk.",
+      "embedding": [
+        0.051635804015,
+        0.138952703526,
+        -0.359997456721,
+        0.223860941107,
+        -0.251674959042,
+        0.461394021227,
+        -0.162140469468,
+        0.70413048539
+      ],
+      "embeddingCommitmentHex": "8fdda9353d68bbad51c7b2c3634a5f067eec69796aa384708cc3fa4efc91d0c5",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-shady-docs-llc",
+      "category": "organization",
+      "honestyRole": "VILLAIN",
+      "publicSafeSummary": "Shady Docs LLC (dba TestTown Credential Services) is a TestTown organization, acting as a appraiser issuer, at requested assurance level SYSTEM_CRITICAL, attesting scopes BIRTH_CERTIFICATE and DRIVERS_LICENSE and DEGREE and APPRAISAL, for subject tiers human and agent and animal and rwa, established 2024, flagged by TestTown review as a fraudulent-credential risk.",
+      "embedding": [
+        0.041212274073,
+        -0.633115013696,
+        0.129644543279,
+        -0.088674635151,
+        -0.300192208169,
+        0.482722535705,
+        0.498183136044,
+        0.038382079364
+      ],
+      "embeddingCommitmentHex": "6cf85ab2b056bb953e2941265298a2030f7c2167974aec53095a06d3d412ab95",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    },
+    {
+      "fixtureId": "testtown-organizations-willow-creek-veterinary-clinic",
+      "category": "organization",
+      "honestyRole": "AUTHENTIC",
+      "publicSafeSummary": "Willow Creek Veterinary Clinic is a TestTown organization, acting as a veterinary issuer, at requested assurance level REGULATED_ENTITY, attesting scopes VACCINATION and MICROCHIP_BINDING, for subject tiers animal, established 2003, recorded as an authentic TestTown participant.",
+      "embedding": [
+        0.133124038312,
+        0.567332082281,
+        0.546846388624,
+        0.105602182074,
+        -0.00996185189,
+        -0.585492762529,
+        0.055900589679,
+        -0.064758133337
+      ],
+      "embeddingCommitmentHex": "47d1ed76707a817030240b313ec1e8c77c67feaaa4380d3a55e692c4d3aae453",
+      "protectedFieldNames": [
+        "ein",
+        "stateRegistration",
+        "documents",
+        "officers"
+      ]
+    }
+  ]
+}

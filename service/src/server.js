@@ -8,17 +8,23 @@
 //   GET  /api/v1/status              TestWired status + provider probes
 //   POST /                           compliance check (Worker POST parity)
 //   POST /api/v1/compliance/check    same handler, canonical path
+//   ANY  /judge/*                    ported judge API (mhelixctw/api/v1) —
+//                                    the TestWired memory-journey contract.
+//                                    The web app's VITE_API_BASE_URL points
+//                                    at <service>/judge.
 //
 // Honesty rules (see MidnightHelixCTW AGENTS.md): a probe result is evidence
 // for exactly what it probed, nothing more. Failures are replaced with one
 // bounded safe error and the provider reports NOT_CONNECTED.
 
+import { randomUUID } from "node:crypto";
 import { createServer } from "node:http";
 
 import {
   validateComplianceInput,
   runComplianceCheck,
 } from "./compliance.js";
+import { createHandler as createJudgeHandler } from "./judge-handler.js";
 import { createReceiptStore } from "./gcs-receipts.js";
 import { createCockroachDbProvider } from "./cockroachdb-provider.js";
 import { createCockroachQueryExecutor } from "./cockroach-query-executor.js";
@@ -85,6 +91,70 @@ function buildCockroachProvider(databaseUrl) {
 }
 
 const cockroachProvider = buildCockroachProvider(configuration.databaseUrl);
+
+// The ported judge API (see judge-handler.js). It receives the same read-only
+// CockroachDB probe and, deliberately, no vector-memory provider in Stage A:
+// every memory mutation answers an honest 503 until Stage B connects one.
+const judgeHandler = createJudgeHandler({ cockroachProvider });
+
+// ---------------------------------------------------------------------------
+// Judge adapter — converts a Node request into the Lambda payload-format 2.0
+// event shape the ported handler expects, so the handler itself stays aligned
+// with upstream. Preflight is answered here because API Gateway did that job
+// in the AWS deployment.
+// ---------------------------------------------------------------------------
+const JUDGE_MAX_BODY_BYTES = 65_536;
+
+function judgePreflightHeaders(request) {
+  const origin = request.headers.origin;
+  if (origin && configuration.allowedOrigins.includes(origin)) {
+    return {
+      "access-control-allow-origin": origin,
+      "access-control-allow-methods": "GET, POST, OPTIONS",
+      "access-control-allow-headers": "content-type, idempotency-key",
+      "access-control-max-age": "600",
+      vary: "Origin",
+    };
+  }
+  return {};
+}
+
+async function handleJudgeRequest(request, response, url) {
+  const judgePath = url.pathname.slice("/judge".length) || "/";
+
+  if (request.method === "OPTIONS") {
+    response.writeHead(204, judgePreflightHeaders(request));
+    return response.end();
+  }
+
+  const chunks = [];
+  let totalBytes = 0;
+  for await (const chunk of request) {
+    totalBytes += chunk.length;
+    if (totalBytes > JUDGE_MAX_BODY_BYTES) {
+      response.writeHead(413, { "content-type": "application/json; charset=utf-8" });
+      return response.end(JSON.stringify({ ok: false, error: "Request body is too large." }));
+    }
+    chunks.push(chunk);
+  }
+  const rawBody = Buffer.concat(chunks).toString("utf8");
+
+  const event = {
+    rawPath: judgePath,
+    rawQueryString: url.search.startsWith("?") ? url.search.slice(1) : url.search,
+    headers: request.headers,
+    body: rawBody === "" ? undefined : rawBody,
+    isBase64Encoded: false,
+    requestContext: {
+      requestId: randomUUID(),
+      http: { method: request.method ?? "", path: judgePath },
+    },
+  };
+
+  const result = await judgeHandler(event);
+  response.writeHead(result.statusCode, result.headers);
+  return response.end(result.body);
+}
 
 // ---------------------------------------------------------------------------
 // HTTP plumbing
@@ -227,7 +297,12 @@ async function complianceResponse(request, response) {
 
 const server = createServer(async (request, response) => {
   try {
-    const path = new URL(request.url, "http://localhost").pathname;
+    const url = new URL(request.url, "http://localhost");
+    const path = url.pathname;
+
+    if (path === "/judge" || path.startsWith("/judge/")) {
+      return await handleJudgeRequest(request, response, url);
+    }
 
     if (request.method === "OPTIONS") {
       response.writeHead(204, corsHeaders(request));
