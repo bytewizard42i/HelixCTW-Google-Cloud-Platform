@@ -22,8 +22,8 @@ export function NarrationControls({
         <div>
           <strong>{guideStarted ? "Guided demo active" : "Guided demo ready"}</strong>
           <p>
-            {narrator.voiceLabel}. No microphone. The browser or operating system
-            may use a local or remote speech service.
+            {narrator.voiceLabel}. No microphone. Static curated clips play first;
+            browser speech is used only as a fallback.
           </p>
         </div>
       </div>

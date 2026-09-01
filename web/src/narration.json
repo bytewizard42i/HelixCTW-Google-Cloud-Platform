@@ -1,0 +1,9 @@
+{
+  "overview": "Welcome to the Helix C T W test-wired demo. All results come from real test APIs for the protocol.",
+  "case": "This is a fictional TestTown property. The permitted question is whether it is unencumbered. No deed text belongs in the agent's model context.",
+  "connection": "This status comes from the configured API. Reachable does not mean ready, and disconnected providers keep every operational control locked.",
+  "checkpoint": "Each checkpoint advances only after the API returns the identifiers required for that operation.",
+  "evidence": "The evidence drawer shows only allowlisted fields returned by the API. Missing service evidence stays marked not available.",
+  "providers": "Each provider reports evidence and connection separately. Mock identity fixtures never become live merely because the Google Cloud front door responds.",
+  "narrator": "Narration plays only this curated guide copy. It opens no microphone, and it never reads API responses, identifiers, or protected data."
+}

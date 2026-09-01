@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+
 import { describe, expect, it } from "vitest";
 import {
   GUIDED_NARRATION,
@@ -12,11 +14,21 @@ describe("guided narration policy", () => {
     expect(NARRATION_DWELL_MILLISECONDS).toBe(650);
   });
 
-  it("accepts only curated narration keys and discloses speech-service scope", () => {
+  it("accepts only curated narration keys and excludes dynamic data", () => {
     expect(isNarrationKey("evidence")).toBe(true);
     expect(isNarrationKey("api-response-body")).toBe(false);
     expect(Object.keys(GUIDED_NARRATION)).not.toContain("protected-data");
-    expect(GUIDED_NARRATION.narrator).toContain("local or remote");
+    expect(GUIDED_NARRATION.narrator).toContain("never reads API responses");
+  });
+
+  it("has one generated MP3 clip for every curated narration key", async () => {
+    for (const key of Object.keys(GUIDED_NARRATION)) {
+      const audio = await readFile(
+        new URL(`../public/narration/${key}.mp3`, import.meta.url),
+      );
+      expect(audio.byteLength).toBeGreaterThan(50_000);
+      expect(audio.subarray(0, 3).toString("ascii")).toBe("ID3");
+    }
   });
 
   it("prefers a local British English voice", () => {

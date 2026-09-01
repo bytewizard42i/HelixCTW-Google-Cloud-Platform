@@ -68,19 +68,21 @@ The preview URL is <http://localhost:4178>.
 
 ## Guided narration and accessibility
 
-The narrator uses browser Web Speech synthesis only after **Start guided demo**
-is activated. It prefers local British English, then local English, then
-browser-reported remote British and English voices. The selected voice is
-labelled as local or browser-reported remote. Voice identity and gender are
-never promised.
+After **Start guided demo**, the narrator plays seven pre-generated Gemini
+`gemini-3.1-flash-tts-preview` clips using the Charon voice. The clips are
+fixed static assets, normalized to -16 LUFS, and contain only the curated text
+in `src/narration.json`. If a clip cannot load or play, the app falls back to
+browser Web Speech (preferring local British English, then local English, then
+browser-reported voices). The UI labels the primary voice as AI-generated.
 
-Only curated strings from `src/guidance.ts` can be spoken. API responses,
-receipts, identifiers, and protected data are excluded. Hover and keyboard
-focus share a 650 millisecond dwell on case fields, provider cards, and evidence
-rows, while touch users receive explicit voice, replay, and stop controls. No
-microphone or application-managed speech provider is used. The browser or
-operating system may use a local or remote speech service. See
-`docs/UI_AND_BROWSER_NARRATION.md` in the upstream MidnightHelixCTW repository.
+API responses, receipts, identifiers, model reasoning, and protected data are
+never narrated. Hover and keyboard focus share a bounded dwell on case fields,
+provider cards, and evidence rows, while touch users receive explicit voice,
+replay, and stop controls. No microphone is opened, and no TTS API key or
+runtime synthesis request reaches the browser. Regenerate the clips only with
+`scripts/generate-narration.py`; provenance is recorded in
+`public/narration/README.md`. See `docs/UI_AND_BROWSER_NARRATION.md` in the
+upstream MidnightHelixCTW repository for the original Web Speech design.
 
 ## Public API contract
 

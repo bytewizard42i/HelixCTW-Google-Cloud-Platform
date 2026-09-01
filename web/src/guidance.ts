@@ -1,22 +1,7 @@
+import narration from "./narration.json";
+
 export const NARRATION_DWELL_MILLISECONDS = 650;
-
-export const GUIDED_NARRATION = {
-  overview:
-    "Welcome to the Helix C T W test-wired demo. All results come from real test APIs for the protocol.",
-  case:
-    "This is a fictional TestTown property. The permitted question is whether it is unencumbered. No deed text belongs in the agent's model context.",
-  connection:
-    "This status comes from the configured API. Reachable does not mean ready, and disconnected providers keep every operational control locked.",
-  checkpoint:
-    "Each checkpoint advances only after the API returns the identifiers required for that operation.",
-  evidence:
-    "The evidence drawer shows only allowlisted fields returned by the API. Missing service evidence stays marked not available.",
-  providers:
-    "Each provider reports evidence and connection separately. Mock identity fixtures never become live merely because the Google Cloud front door responds.",
-  narrator:
-    "Narration passes only this curated guide copy to your browser or operating system's speech service. It opens no microphone. The selected voice may be local or remote.",
-} as const;
-
+export const GUIDED_NARRATION = narration;
 export type NarrationKey = keyof typeof GUIDED_NARRATION;
 
 export interface NarrationVoiceDescriptor {

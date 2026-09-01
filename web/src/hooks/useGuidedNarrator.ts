@@ -29,6 +29,14 @@ function supportsBrowserNarration(): boolean {
   );
 }
 
+function supportsStaticNarration(): boolean {
+  return typeof globalThis.Audio === "function";
+}
+
+function narrationAudioUrl(key: NarrationKey): string {
+  return `/narration/${key}.mp3`;
+}
+
 function narrationKeyAtTarget(target: EventTarget | null): NarrationKey | null {
   if (!(target instanceof Element)) {
     return null;
@@ -60,13 +68,16 @@ export interface GuidedNarratorController {
 export function useGuidedNarrator(
   guideStarted: boolean,
 ): GuidedNarratorController {
-  const [supported] = useState(supportsBrowserNarration);
+  const [browserNarrationSupported] = useState(supportsBrowserNarration);
+  const [staticNarrationSupported] = useState(supportsStaticNarration);
+  const supported = staticNarrationSupported || browserNarrationSupported;
   const [enabled, setEnabled] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [selectedVoice, setSelectedVoice] =
     useState<SpeechSynthesisVoice | null>(null);
   const [lastKey, setLastKey] = useState<NarrationKey | null>(null);
   const pendingTimerReference = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const activeAudioReference = useRef<HTMLAudioElement | null>(null);
   const lastSpokenKeyReference = useRef<NarrationKey | null>(null);
   const lastSpokenAtReference = useRef(0);
   const utteranceRequestGateReference = useRef(new LatestRequestGate());
@@ -79,33 +90,48 @@ export function useGuidedNarrator(
     }
   }, []);
 
+  const stopActiveAudio = useCallback(() => {
+    const activeAudio = activeAudioReference.current;
+    activeAudioReference.current = null;
+    if (activeAudio) {
+      activeAudio.pause();
+      activeAudio.currentTime = 0;
+      activeAudio.onplay = null;
+      activeAudio.onended = null;
+      activeAudio.onerror = null;
+    }
+  }, []);
+
   const stop = useCallback(() => {
     utteranceRequestGateReference.current.invalidate();
     clearPending();
-    if (supported) {
+    stopActiveAudio();
+    if (browserNarrationSupported) {
       window.speechSynthesis.cancel();
     }
     setSpeaking(false);
-  }, [clearPending, supported]);
+  }, [browserNarrationSupported, clearPending, stopActiveAudio]);
 
   useEffect(() => {
-    if (!supported) {
-      return undefined;
-    }
-    const speechSynthesis = window.speechSynthesis;
+    const speechSynthesis = browserNarrationSupported
+      ? window.speechSynthesis
+      : null;
     const refreshVoices = () => {
-      setSelectedVoice(selectNarrationVoice(speechSynthesis.getVoices()));
+      if (speechSynthesis) {
+        setSelectedVoice(selectNarrationVoice(speechSynthesis.getVoices()));
+      }
     };
 
     refreshVoices();
-    speechSynthesis.addEventListener("voiceschanged", refreshVoices);
+    speechSynthesis?.addEventListener("voiceschanged", refreshVoices);
     return () => {
       utteranceRequestGateReference.current.invalidate();
       clearPending();
-      speechSynthesis.cancel();
-      speechSynthesis.removeEventListener("voiceschanged", refreshVoices);
+      stopActiveAudio();
+      speechSynthesis?.cancel();
+      speechSynthesis?.removeEventListener("voiceschanged", refreshVoices);
     };
-  }, [clearPending, supported]);
+  }, [browserNarrationSupported, clearPending, stopActiveAudio]);
 
   const speak = useCallback(
     (key: NarrationKey, force = false) => {
@@ -123,32 +149,75 @@ export function useGuidedNarrator(
       }
 
       clearPending();
+      stopActiveAudio();
+      if (browserNarrationSupported) {
+        window.speechSynthesis.cancel();
+      }
       const utteranceGeneration =
         utteranceRequestGateReference.current.begin();
-      const speechSynthesis = window.speechSynthesis;
-      speechSynthesis.cancel();
       const setSpeakingIfCurrent = (nextSpeaking: boolean) => {
         if (utteranceRequestGateReference.current.isCurrent(utteranceGeneration)) {
           setSpeaking(nextSpeaking);
         }
       };
-      const utterance = new SpeechSynthesisUtterance(GUIDED_NARRATION[key]);
-      utterance.lang = selectedVoice?.lang ?? "en-GB";
-      utterance.rate = 1.6;
-      utterance.pitch = 1;
-      if (selectedVoice) {
-        utterance.voice = selectedVoice;
-      }
-      utterance.onstart = () => setSpeakingIfCurrent(true);
-      utterance.onend = () => setSpeakingIfCurrent(false);
-      utterance.onerror = () => setSpeakingIfCurrent(false);
+      const speakWithBrowserFallback = () => {
+        if (!browserNarrationSupported) {
+          setSpeakingIfCurrent(false);
+          return;
+        }
+        const utterance = new SpeechSynthesisUtterance(GUIDED_NARRATION[key]);
+        utterance.lang = selectedVoice?.lang ?? "en-GB";
+        utterance.rate = 1.6;
+        utterance.pitch = 1;
+        if (selectedVoice) {
+          utterance.voice = selectedVoice;
+        }
+        utterance.onstart = () => setSpeakingIfCurrent(true);
+        utterance.onend = () => setSpeakingIfCurrent(false);
+        utterance.onerror = () => setSpeakingIfCurrent(false);
+        window.speechSynthesis.speak(utterance);
+      };
+
       lastSpokenKeyReference.current = key;
       lastSpokenAtReference.current = currentTime;
       narrationLockUntilReference.current = currentTime + NARRATION_LOCK_MILLISECONDS;
       setLastKey(key);
-      speechSynthesis.speak(utterance);
+
+      if (!staticNarrationSupported) {
+        speakWithBrowserFallback();
+        return;
+      }
+
+      const audio = new Audio(narrationAudioUrl(key));
+      let fallbackStarted = false;
+      const fallback = () => {
+        if (fallbackStarted) return;
+        fallbackStarted = true;
+        if (activeAudioReference.current === audio) {
+          activeAudioReference.current = null;
+        }
+        speakWithBrowserFallback();
+      };
+      activeAudioReference.current = audio;
+      audio.preload = "auto";
+      audio.onplay = () => setSpeakingIfCurrent(true);
+      audio.onended = () => {
+        if (activeAudioReference.current === audio) {
+          activeAudioReference.current = null;
+        }
+        setSpeakingIfCurrent(false);
+      };
+      audio.onerror = fallback;
+      void audio.play().catch(fallback);
     },
-    [clearPending, selectedVoice, supported],
+    [
+      browserNarrationSupported,
+      clearPending,
+      selectedVoice,
+      staticNarrationSupported,
+      stopActiveAudio,
+      supported,
+    ],
   );
 
   const schedule = useCallback(
@@ -164,7 +233,10 @@ export function useGuidedNarrator(
       }
       if (lastSpokenKeyReference.current !== key) {
         utteranceRequestGateReference.current.invalidate();
-        window.speechSynthesis.cancel();
+        stopActiveAudio();
+        if (browserNarrationSupported) {
+          window.speechSynthesis.cancel();
+        }
         setSpeaking(false);
       }
       pendingTimerReference.current = globalThis.setTimeout(() => {
@@ -172,7 +244,15 @@ export function useGuidedNarrator(
         speak(key);
       }, HOVER_DWELL_MILLISECONDS);
     },
-    [clearPending, enabled, guideStarted, speak, supported],
+    [
+      browserNarrationSupported,
+      clearPending,
+      enabled,
+      guideStarted,
+      speak,
+      stopActiveAudio,
+      supported,
+    ],
   );
 
   const onPointerOver = useCallback(
@@ -258,9 +338,11 @@ export function useGuidedNarrator(
     supported,
     enabled,
     speaking,
-    voiceLabel: supported
-      ? narrationVoiceLabel(selectedVoice)
-      : "Narration unavailable in this browser",
+    voiceLabel: staticNarrationSupported
+      ? "Gemini Charon AI narration (pre-generated)"
+      : supported
+        ? narrationVoiceLabel(selectedVoice)
+        : "Narration unavailable in this browser",
     lastKey,
     surfaceProps,
     start,
