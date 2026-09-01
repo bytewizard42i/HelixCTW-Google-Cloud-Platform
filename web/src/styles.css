@@ -859,6 +859,23 @@ main,
   border-radius: 50%;
 }
 
+.evidence-drawer__step {
+  margin: 0.85rem 0 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--green);
+}
+
+.evidence-drawer__description {
+  margin: 0;
+  max-width: 56ch;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
 .evidence-drawer__boundary {
   padding: 1rem 1.5rem;
   margin: 0;

@@ -7,6 +7,8 @@ import { StatusBadge } from "./StatusBadge";
 
 export interface EvidenceSnapshot {
   readonly operation: string;
+  /** Plain-language explanation of what this step just did and proved. */
+  readonly description: string;
   readonly httpStatus: number;
   readonly receivedAt: string;
   readonly fields: EvidenceDisplayFields;
@@ -75,6 +77,14 @@ export function EvidenceDrawer({
         <div>
           <p className="eyebrow">Read-only evidence</p>
           <h2 id="evidence-drawer-title">What the API actually returned</h2>
+          {evidence ? (
+            <>
+              <p className="evidence-drawer__step">{evidence.operation}</p>
+              <p className="evidence-drawer__description">
+                {evidence.description}
+              </p>
+            </>
+          ) : null}
         </div>
         <button className="icon-button" type="button" onClick={onClose}>
           <span aria-hidden="true">×</span>

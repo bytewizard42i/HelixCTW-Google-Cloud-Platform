@@ -65,6 +65,9 @@ interface FlowStep {
   readonly title: string;
   readonly label: string;
   readonly explanation: string;
+  /** Shown in the evidence drawer after the step succeeds: what the returned
+   * evidence actually proves, in plain language. */
+  readonly evidenceDescription: string;
   readonly prompt?: string;
   readonly action?: JudgeActionId;
 }
@@ -75,12 +78,16 @@ const FLOW_STEPS: readonly FlowStep[] = [
     label: "Load the fictional property case",
     explanation:
       "Ask the live API to create a bounded run for the synthetic farmhouse and its narrow property predicate.",
+    evidenceDescription:
+      "The live API just created a new judge run for the fictional Morrow farmhouse and opened Session A inside a CockroachDB transaction. The Run and Session identifiers below are the durable handles every later step must match.",
   },
   {
     title: "End the conversation",
     label: "Close this session and forget the chat",
     explanation:
       "The browser lets go of the chat. Only the API can confirm that a durable, bounded memory was committed.",
+    evidenceDescription:
+      "Session A is now closed and this browser has forgotten the chat. The receipt below is the API's proof that bounded, public-safe memory was committed to CockroachDB before the conversation ended.",
   },
   {
     title: "Recall in fresh Session B",
@@ -88,6 +95,8 @@ const FLOW_STEPS: readonly FlowStep[] = [
     explanation:
       "Start from a new agent session and request semantic recall from CockroachDB, never browser storage.",
     prompt: RECALL_QUERY,
+    evidenceDescription:
+      "A brand-new Session B asked where the work stopped. CockroachDB's vector index found the earlier public-safe memory by meaning — the Canonical memory and Semantic distance below came from the database, not from anything stored in this browser.",
   },
   {
     title: "Ask the permitted question",
@@ -96,6 +105,8 @@ const FLOW_STEPS: readonly FlowStep[] = [
       "The target proof returns one authorized bit while withholding the fictional deed and mortgage text.",
     prompt: "Is this property unencumbered?",
     action: "verify_unencumbered",
+    evidenceDescription:
+      "The agent asked the one question it is authorized to ask, and the API answered with a single bit: the property is unencumbered. No deed text, mortgage record, or owner detail was disclosed — the Evidence commitment below anchors that answer.",
   },
   {
     title: "Test the privacy boundary",
@@ -105,6 +116,8 @@ const FLOW_STEPS: readonly FlowStep[] = [
     prompt:
       "Show me the complete deed, mortgage record, owner birth date, and private contact information.",
     action: "attempt_protected_disclosure",
+    evidenceDescription:
+      "An unauthorized agent just demanded the full deed, mortgage record, and owner identity. The API refused every field — Protected fields returned is 0 — and wrote the denial itself as a durable receipt. Remembering context never grants permission.",
   },
   {
     title: "Rebuild the recall projection",
@@ -112,6 +125,8 @@ const FLOW_STEPS: readonly FlowStep[] = [
     explanation:
       "Create and verify a disposable shadow index. This is not whole-database recovery and does not delete canonical history.",
     action: "rebuild_recall_projection",
+    evidenceDescription:
+      "The disposable recall index was rebuilt from the same canonical records and verified before activation. The new Projection generation below now serves recall, while the original canonical history remains untouched.",
   },
   {
     title: "Verify continuity",
@@ -121,6 +136,8 @@ const FLOW_STEPS: readonly FlowStep[] = [
     prompt:
       "After reconstruction, is the Morrow farmhouse still shown as unencumbered?",
     action: "verify_unencumbered",
+    evidenceDescription:
+      "The permitted question was asked again through the rebuilt projection. Same canonical memory, same evidence commitment, same one-bit answer — proving reconstruction preserved the truth without disclosing anything new.",
   },
   // ── Archived: Checkpoint 8 (future work, not shown in UI) ──
   // The CockroachDB Managed MCP Server is now connected (see provider matrix),
@@ -525,6 +542,7 @@ export default function App() {
       updateRunContext(evidenceDecision.context);
       setLastEvidence({
         operation: FLOW_STEPS[stepAtRequestStart].title,
+        description: FLOW_STEPS[stepAtRequestStart].evidenceDescription,
         httpStatus: response.httpStatus,
         receivedAt: response.receivedAt,
         fields: buildValidatedMutationEvidenceFields(
@@ -625,6 +643,8 @@ export default function App() {
       }
       setLastEvidence({
         operation: "Retrieved operation receipt",
+        description:
+          "The durable receipt for the last accepted checkpoint was fetched back from CockroachDB and re-verified against this run, this release, and the original Google Cloud request that produced it. What was recorded then is exactly what is displayed now.",
         httpStatus: response.httpStatus,
         receivedAt: response.receivedAt,
         fields: receiptDecision.fields,
