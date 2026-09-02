@@ -24,6 +24,7 @@ import {
   validateComplianceInput,
   runComplianceCheck,
 } from "./compliance.js";
+import { createDiagnosticsStore, sanitizeDiagnostic } from "./diagnostics.js";
 import { createHandler as createJudgeHandler } from "./judge-handler.js";
 import { createReceiptStore } from "./gcs-receipts.js";
 import { createCockroachDbProvider } from "./cockroachdb-provider.js";
@@ -55,6 +56,9 @@ const configuration = Object.freeze({
 });
 
 const receiptStore = createReceiptStore({
+  bucketName: configuration.receiptsBucket,
+});
+const diagnosticsStore = createDiagnosticsStore({
   bucketName: configuration.receiptsBucket,
 });
 
@@ -142,6 +146,19 @@ async function handleJudgeRequest(request, response, url) {
   if (request.method === "OPTIONS") {
     response.writeHead(204, judgePreflightHeaders(request));
     return response.end();
+  }
+
+  // Visitor diagnostics ride the same base URL as the judge API but are
+  // handled here, outside the ported contract: bounded, sanitized,
+  // fire-and-forget, and incapable of affecting the journey.
+  if (judgePath === "/api/v1/diagnostics" && request.method === "POST") {
+    const parsed = await readJsonBody(request);
+    const record = parsed.error ? null : sanitizeDiagnostic(parsed.input);
+    if (!record) {
+      return sendError(request, response, "Invalid diagnostic payload.", 400);
+    }
+    const stored = await diagnosticsStore.put(record);
+    return sendJson(request, response, { ok: true, stored }, 202);
   }
 
   const chunks = [];

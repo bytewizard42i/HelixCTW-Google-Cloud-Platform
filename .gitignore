@@ -38,5 +38,8 @@ web/dist/
 # Rendered videos — large binaries stay out of Git (sources are committed)
 media/videos/
 
+# Pulled visitor diagnostics — reviewed locally, never published
+diagnostics/
+
 # Windows Mark-of-the-Web
 *:Zone.Identifier

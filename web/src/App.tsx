@@ -41,6 +41,7 @@ import {
   validateCheckpointResponseEvidence,
   type VerifiedRunContext,
 } from "./responseEvidence";
+import { reportDiagnostic } from "./diagnostics";
 
 const AUTHORIZED_AGENT_DIDZ =
   "didz:testtown:agent:morrow-property-assistant";
@@ -318,12 +319,19 @@ export default function App() {
       );
       return {
         client: baseUrl ? createJudgeApiClient(baseUrl) : null,
+        baseUrl,
         error: null,
       };
     } catch (error) {
-      return { client: null, error: publicErrorMessage(error) };
+      return { client: null, baseUrl: null, error: publicErrorMessage(error) };
     }
   }, []);
+
+  // One anonymous visit ping per page load: browser capabilities only, so
+  // device-specific journey failures can be diagnosed. Fire-and-forget.
+  useEffect(() => {
+    reportDiagnostic(clientConfiguration.baseUrl, "visit");
+  }, [clientConfiguration.baseUrl]);
 
   const checkConnection = useCallback(async () => {
     if (
@@ -554,7 +562,13 @@ export default function App() {
       setDrawerOpen(true);
       fireConfetti();
     } catch (error) {
-      setOperationError(publicErrorMessage(error));
+      const failureMessage = publicErrorMessage(error);
+      setOperationError(failureMessage);
+      reportDiagnostic(clientConfiguration.baseUrl, "failure", {
+        step: FLOW_STEPS[stepAtRequestStart].title,
+        message: failureMessage,
+        release: statusResponse?.releaseCommit,
+      });
     } finally {
       operationGateReference.current.end();
       setOperationPending(false);
@@ -650,7 +664,13 @@ export default function App() {
         fields: receiptDecision.fields,
       });
     } catch (error) {
-      setOperationError(publicErrorMessage(error));
+      const failureMessage = publicErrorMessage(error);
+      setOperationError(failureMessage);
+      reportDiagnostic(clientConfiguration.baseUrl, "failure", {
+        step: "Retrieve receipt",
+        message: failureMessage,
+        release: statusResponse?.releaseCommit,
+      });
     } finally {
       receiptInFlightReference.current = false;
       setFetchingReceipt(false);
