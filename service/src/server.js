@@ -64,12 +64,13 @@ const diagnosticsStore = createDiagnosticsStore({
 });
 
 // Cost protection: every state-changing (POST) request passes this limiter.
-// A full judge journey is nine POSTs, so thirty per minute per client leaves
-// generous headroom for humans while a flood gets cheap 429s. Diagnostics
-// get their own tighter budget because each one writes a GCS object.
+// A full judge journey is nine POSTs. A whole meeting room shares one Wi-Fi
+// address, so the per-client budget allows ~10 simultaneous demos; the global
+// ceilings are what actually bound the bill. Diagnostics get their own
+// tighter budget because each one writes a GCS object.
 const mutationRateLimiter = createRateLimiter({
-  perClientPerMinute: 30,
-  globalPerMinute: 240,
+  perClientPerMinute: 90,
+  globalPerMinute: 300,
   globalPerDay: 20_000,
 });
 const diagnosticsRateLimiter = createRateLimiter({

@@ -50,9 +50,9 @@ test("global per-day ceiling holds and resets on a new day", () => {
   assert.equal(limiter.allow("fresh"), true, "a new day restores capacity");
 });
 
-test("clientAddressOf prefers the first X-Forwarded-For entry", () => {
+test("clientAddressOf uses the LAST X-Forwarded-For entry (appended by Cloud Run, unforgeable)", () => {
   assert.equal(
-    clientAddressOf({ headers: { "x-forwarded-for": "203.0.113.9, 10.0.0.1" }, socket: {} }),
+    clientAddressOf({ headers: { "x-forwarded-for": "forged.example, 203.0.113.9" }, socket: {} }),
     "203.0.113.9",
   );
   assert.equal(

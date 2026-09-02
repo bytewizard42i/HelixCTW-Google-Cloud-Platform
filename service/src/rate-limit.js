@@ -76,11 +76,16 @@ export function createRateLimiter({
   });
 }
 
-/** First X-Forwarded-For entry (Cloud Run's client address), else the socket. */
+/**
+ * The client address as Cloud Run saw it. Google's front end APPENDS the true
+ * client IP to X-Forwarded-For, so the LAST entry is authoritative; earlier
+ * entries are client-supplied and could be forged to dodge per-client limits.
+ */
 export function clientAddressOf(request) {
   const forwarded = request.headers["x-forwarded-for"];
   if (typeof forwarded === "string" && forwarded.length > 0) {
-    return forwarded.split(",")[0].trim().slice(0, 64);
+    const entries = forwarded.split(",");
+    return entries[entries.length - 1].trim().slice(0, 64);
   }
   return request.socket?.remoteAddress ?? "unknown";
 }
