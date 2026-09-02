@@ -12,7 +12,11 @@ import type {
   StatusResponse,
 } from "./types";
 
-const REQUEST_TIMEOUT_MILLISECONDS = 15_000;
+// 30 s rather than 15 s: close-session legitimately takes ~4.5 s on the
+// server, a Cloud Run cold start can add several more, and slow mobile
+// networks add their own. The journey still fails closed on timeout — this
+// only gives honest-but-slow connections a fair chance to succeed.
+const REQUEST_TIMEOUT_MILLISECONDS = 30_000;
 const IDEMPOTENCY_KEY_PATTERN = /^[A-Za-z0-9._:-]{16,128}$/;
 
 export class JudgeApiConfigurationError extends Error {
