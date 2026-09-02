@@ -1,0 +1,9 @@
+{
+  "name": "helixctw-gcp-test-tooling",
+  "private": true,
+  "description": "Operator test tooling for the HelixCTW GCP edition (browser matrix).",
+  "type": "module",
+  "devDependencies": {
+    "playwright": "1.61.1"
+  }
+}
