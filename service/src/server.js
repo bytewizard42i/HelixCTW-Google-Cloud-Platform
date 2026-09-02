@@ -26,6 +26,7 @@ import {
 } from "./compliance.js";
 import { createDiagnosticsStore, sanitizeDiagnostic } from "./diagnostics.js";
 import { createHandler as createJudgeHandler } from "./judge-handler.js";
+import { clientAddressOf, createRateLimiter } from "./rate-limit.js";
 import { createReceiptStore } from "./gcs-receipts.js";
 import { createCockroachDbProvider } from "./cockroachdb-provider.js";
 import { createGcpVectorMemoryProvider } from "./gcp-vector-bootstrap.js";
@@ -60,6 +61,21 @@ const receiptStore = createReceiptStore({
 });
 const diagnosticsStore = createDiagnosticsStore({
   bucketName: configuration.receiptsBucket,
+});
+
+// Cost protection: every state-changing (POST) request passes this limiter.
+// A full judge journey is nine POSTs, so thirty per minute per client leaves
+// generous headroom for humans while a flood gets cheap 429s. Diagnostics
+// get their own tighter budget because each one writes a GCS object.
+const mutationRateLimiter = createRateLimiter({
+  perClientPerMinute: 30,
+  globalPerMinute: 240,
+  globalPerDay: 20_000,
+});
+const diagnosticsRateLimiter = createRateLimiter({
+  perClientPerMinute: 10,
+  globalPerMinute: 60,
+  globalPerDay: 2_000,
 });
 
 // ---------------------------------------------------------------------------
@@ -152,6 +168,9 @@ async function handleJudgeRequest(request, response, url) {
   // handled here, outside the ported contract: bounded, sanitized,
   // fire-and-forget, and incapable of affecting the journey.
   if (judgePath === "/api/v1/diagnostics" && request.method === "POST") {
+    if (!diagnosticsRateLimiter.allow(clientAddressOf(request))) {
+      return sendError(request, response, "Too many diagnostics requests.", 429);
+    }
     const parsed = await readJsonBody(request);
     const record = parsed.error ? null : sanitizeDiagnostic(parsed.input);
     if (!record) {
@@ -159,6 +178,17 @@ async function handleJudgeRequest(request, response, url) {
     }
     const stored = await diagnosticsStore.put(record);
     return sendJson(request, response, { ok: true, stored }, 202);
+  }
+
+  // Cost protection for every remaining judge mutation (journey POSTs):
+  // fail closed with an honest 429 before any database or storage work.
+  if (request.method === "POST" && !mutationRateLimiter.allow(clientAddressOf(request))) {
+    return sendError(
+      request,
+      response,
+      "Too many requests from this client. The demo allows a full journey at human speed; please retry in a minute.",
+      429,
+    );
   }
 
   const chunks = [];

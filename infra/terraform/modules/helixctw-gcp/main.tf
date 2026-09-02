@@ -150,7 +150,10 @@ resource "google_cloud_run_v2_service" "compliance" {
     service_account = google_service_account.service.email
 
     scaling {
-      min_instance_count = 0 # scale to zero: costs nothing while idle
+      # One instance stays warm so the first visitor (or a judge mid-meeting)
+      # never pays a cold-start wait. Roughly $3-10/month with cpu_idle=true;
+      # set back to 0 to return to free scale-to-zero.
+      min_instance_count = 1
       max_instance_count = 3 # demo-scale ceiling
     }
 
