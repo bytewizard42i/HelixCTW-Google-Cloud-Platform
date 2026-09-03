@@ -97,6 +97,14 @@ answer itself. HelixCTW is the **data layer** that makes those proofs fast to
 query, agent-accessible, and globally available — without ever exposing the
 underlying raw data.
 
+**Design principle — authority is a receipt, not a session.** This edition is
+where the principle was proven live. Every read, write, and denial leaves the
+same signed Action Receipt (`RESERVED → COMMITTED | DENIED`), bound to the exact
+`releaseCommit` that produced it. The vector-memory capability is rotated on
+every deploy rather than held as a standing key, and rate limits are enforced
+per request, not per authenticated session. Canon:
+[AUTHORITY_IS_A_RECEIPT.md](https://github.com/bytewizard42i/DIDzMonolith/blob/main/DIDzMonolith-docs/standards/AUTHORITY_IS_A_RECEIPT.md).
+
 ## Repository Map
 
 | Path | What It Is |
